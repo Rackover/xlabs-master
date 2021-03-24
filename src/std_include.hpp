@@ -26,6 +26,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 
 // min and max is required by gdi, therefore NOMINMAX won't work
 #ifdef max
