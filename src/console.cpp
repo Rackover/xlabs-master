@@ -1,0 +1,167 @@
+#include "std_include.hpp"
+#include "console.hpp"
+
+#ifdef _WIN32
+#define COLOR_LOG_INFO 11//15
+#define COLOR_LOG_WARN 14
+#define COLOR_LOG_ERROR 12
+#define COLOR_LOG_DEBUG 15//7
+#else
+#define COLOR_LOG_INFO "\033[1;36;24;27m"//"\033[1;37;24;27m"
+#define COLOR_LOG_WARN "\033[1;33;24;27m"
+#define COLOR_LOG_ERROR "\033[1;31;24;27m"
+#define COLOR_LOG_DEBUG "\033[0m\033[1m"
+#endif
+
+namespace console
+{
+	namespace
+	{
+		std::mutex signal_mutex;
+		std::function<void()> signal_callback;
+
+#ifdef _WIN32
+		BOOL WINAPI handler(const DWORD signal)
+		{
+			if (signal == CTRL_C_EVENT && signal_callback)
+			{
+				signal_callback();
+			}
+
+			return TRUE;
+		}
+
+#else
+	void handler(int signal)
+	{
+		if (signal == SIGINT && signal_callback)
+		{
+			signal_callback();
+		}
+	}
+#endif
+
+		const char* format(va_list* ap, const char* message)
+		{
+			static thread_local char buffer[0x1000];
+
+#ifdef _WIN32
+			_vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), message, *ap);
+#else
+			vsnprintf(buffer, sizeof(buffer), message, *ap);
+#endif
+
+			return buffer;
+		}
+
+#ifdef _WIN32
+		HANDLE get_console_handle()
+		{
+			return GetStdHandle(STD_OUTPUT_HANDLE);
+		}
+#endif
+
+#ifdef _WIN32
+		void set_color(const WORD color)
+		{
+			SetConsoleTextAttribute(get_console_handle(), color);
+		}
+#else
+		void set_color(const char* color)
+		{
+			printf("%s", color);
+		}
+#endif
+	}
+
+	void reset_color()
+	{
+#ifdef _WIN32
+		SetConsoleTextAttribute(get_console_handle(), 7);
+#else
+		printf("\033[0m");
+#endif
+
+		fflush(stdout);
+	}
+
+	void info(const char* message, ...)
+	{
+		va_list ap;
+		va_start(ap, message);
+
+		set_color(COLOR_LOG_INFO);
+		printf("INFO  - %s\n", format(&ap, message));
+
+		va_end(ap);
+	}
+
+	void warn(const char* message, ...)
+	{
+		va_list ap;
+		va_start(ap, message);
+
+		set_color(COLOR_LOG_WARN);
+		printf("WARN  - %s\n", format(&ap, message));
+
+		va_end(ap);
+	}
+
+	void error(const char* message, ...)
+	{
+		va_list ap;
+		va_start(ap, message);
+
+		set_color(COLOR_LOG_ERROR);
+		printf("ERROR - %s\n", format(&ap, message));
+
+		va_end(ap);
+	}
+
+#ifdef DEBUG
+	void debug(const char* message, ...)
+	{
+		va_list ap;
+		va_start(ap, message);
+
+		set_color(COLOR_LOG_DEBUG);
+		printf("DEBUG - %s\n", format(&ap, message));
+
+		va_end(ap);
+	}
+#endif
+
+	void set_title(const std::string& title)
+	{
+#ifdef _WIN32
+		SetConsoleTitleA(title.data());
+#else
+        printf("\033]0;%s\007", title.data());
+        fflush(stdout);
+#endif
+	}
+
+	signal_handler::signal_handler(std::function<void()> callback)
+		: std::lock_guard<std::mutex>(signal_mutex)
+	{
+		signal_callback = std::move(callback);
+
+#ifdef _WIN32
+		SetConsoleCtrlHandler(handler, TRUE);
+#else
+		signal(SIGINT, handler);
+#endif
+	}
+
+	signal_handler::~signal_handler()
+	{
+#ifdef _WIN32
+		SetConsoleCtrlHandler(handler, FALSE);
+#else
+		signal(SIGINT, SIG_DFL);
+#endif
+
+
+		signal_callback = {};
+	}
+}

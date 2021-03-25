@@ -21,6 +21,8 @@ namespace network
 		void send(const address& target, const std::string& data) const;
 		bool receive(address& source, std::string& data) const;
 
+		bool set_blocking(bool blocking);
+
 	private:
 		SOCKET socket_ = INVALID_SOCKET;
 	};

@@ -80,4 +80,17 @@ namespace network
 		data.assign(buffer, buffer + len);
 		return true;
 	}
+
+	bool socket::set_blocking(const bool blocking)
+	{
+#ifdef _WIN32
+		unsigned long mode = blocking ? 0 : 1;
+		return ioctlsocket(this->socket_, FIONBIO, &mode) == 0;
+#else
+		int flags = fcntl(this->socket_, F_GETFL, 0);
+		if (flags == -1) return false;
+		flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
+		return fcntl(this->socket_, F_SETFL, flags) == 0;
+#endif
+	}
 }
