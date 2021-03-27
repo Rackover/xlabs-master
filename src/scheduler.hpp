@@ -27,5 +27,5 @@ private:
 
 	void add_task(task&& task);
 	void merge_new_tasks();
-	void run_pending_tasks_internal();
+	void run_pending_tasks();
 };

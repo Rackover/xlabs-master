@@ -39,7 +39,7 @@ void scheduler::run_frame()
 		this->is_executing_ = false;
 	});
 	this->is_executing_ = true;
-	this->run_pending_tasks_internal();
+	this->run_pending_tasks();
 }
 
 void scheduler::add_task(task&& task)
@@ -50,8 +50,6 @@ void scheduler::add_task(task&& task)
 
 void scheduler::merge_new_tasks()
 {
-	std::lock_guard<std::recursive_mutex> _{this->mutex_};
-
 	if(is_executing_)
 	{
 		return;
@@ -61,7 +59,7 @@ void scheduler::merge_new_tasks()
 	this->new_tasks_.clear();
 }
 
-void scheduler::run_pending_tasks_internal()
+void scheduler::run_pending_tasks()
 {
 	for (auto i = this->tasks_.begin(); i != this->tasks_.end();)
 	{

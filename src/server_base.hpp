@@ -1,6 +1,7 @@
 #pragma once
 
 #include "network/socket.hpp"
+#include "scheduler.hpp"
 
 class server_base
 {
@@ -11,9 +12,11 @@ public:
 	void run();
 	void stop();
 
-private:
+protected:
+	scheduler scheduler_{};
 	network::socket socket_{};
-	volatile bool stopped_ = false;
 
+private:
+	volatile bool stopped_ = false;
 	bool receive_data() const;
 };

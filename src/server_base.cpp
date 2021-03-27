@@ -12,10 +12,10 @@ void server_base::run()
 	this->stopped_ = false;
 	while (!this->stopped_)
 	{
-		if(!this->receive_data())
-		{
-			std::this_thread::sleep_for(1ms);
-		}
+		this->receive_data();
+		this->scheduler_.run_frame();
+		
+		std::this_thread::sleep_for(1ms);
 	}
 }
 
