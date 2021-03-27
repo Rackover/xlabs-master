@@ -55,6 +55,8 @@
 #include <optional>
 #include <unordered_set>
 
+#include <gsl/gsl>
+
 #pragma warning(pop)
 #pragma warning(disable: 4100)
 

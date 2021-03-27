@@ -33,30 +33,13 @@ void scheduler::run_frame()
 {
 	std::lock_guard<std::recursive_mutex> _{this->mutex_};
 	this->merge_new_tasks();
-	this->is_executing_ = true;
-	
-	for (auto i = this->tasks_.begin(); i != this->tasks_.end();)
+
+	const auto _x = gsl::finally([&]
 	{
-		const auto now = std::chrono::high_resolution_clock::now();
-		const auto diff = now - i->last_call;
-
-		if (diff < i->interval) continue;
-
-		i->last_call = now;
-
-		const auto res = i->handler();
-		if (res == cond_end)
-		{
-			i = this->tasks_.erase(i);
-		}
-		else
-		{
-			++i;
-		}
-	}
-
-	// TODO: Use scope exit
-	this->is_executing_ = false;
+		this->is_executing_ = false;
+	});
+	this->is_executing_ = true;
+	this->run_pending_tasks_internal();
 }
 
 void scheduler::add_task(task&& task)
@@ -76,4 +59,27 @@ void scheduler::merge_new_tasks()
 
 	this->tasks_.insert(this->tasks_.end(), this->new_tasks_.begin(), this->new_tasks_.end());
 	this->new_tasks_.clear();
+}
+
+void scheduler::run_pending_tasks_internal()
+{
+	for (auto i = this->tasks_.begin(); i != this->tasks_.end();)
+	{
+		const auto now = std::chrono::high_resolution_clock::now();
+		const auto diff = now - i->last_call;
+
+		if (diff < i->interval) continue;
+
+		i->last_call = now;
+
+		const auto res = i->handler();
+		if (res == cond_end)
+		{
+			i = this->tasks_.erase(i);
+		}
+		else
+		{
+			++i;
+		}
+	}
 }
