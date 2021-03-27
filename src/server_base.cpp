@@ -24,6 +24,11 @@ void server_base::stop()
 	stopped_ = true;
 }
 
+void server_base::send_command(const network::address& target, const std::string& command, const std::string& data) const
+{
+	socket_.send(target, "\xFF\xFF\xFF\xFF" + command + " " + data);
+}
+
 bool server_base::receive_data() const
 {
 	std::string data{};

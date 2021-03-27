@@ -12,6 +12,8 @@ public:
 	void run();
 	void stop();
 
+	void send_command(const network::address& target, const std::string& command, const std::string& data) const;
+
 protected:
 	scheduler scheduler_{};
 	network::socket socket_{};
