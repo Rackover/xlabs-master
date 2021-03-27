@@ -5,7 +5,7 @@
 #define COLOR_LOG_INFO 11//15
 #define COLOR_LOG_WARN 14
 #define COLOR_LOG_ERROR 12
-#define COLOR_LOG_DEBUG 15//7
+#define COLOR_LOG_DEBUG 7// 15
 #else
 #define COLOR_LOG_INFO "\033[1;36;24;27m"//"\033[1;37;24;27m"
 #define COLOR_LOG_WARN "\033[1;33;24;27m"
@@ -19,6 +19,28 @@ namespace console
 	{
 		std::mutex signal_mutex;
 		std::function<void()> signal_callback;
+
+		class stdout_lock
+		{
+		public:
+			stdout_lock()
+			{
+#ifdef _WIN32
+				_lock_file(stdout);
+#else
+				flockfile(stdout);
+#endif
+			}
+
+			~stdout_lock()
+			{
+#ifdef _WIN32
+				_unlock_file(stdout);
+#else
+				funlockfile(stdout);
+#endif
+			}
+		};
 
 #ifdef _WIN32
 		BOOL WINAPI handler(const DWORD signal)
@@ -76,6 +98,7 @@ namespace console
 
 	void reset_color()
 	{
+		stdout_lock _{};
 #ifdef _WIN32
 		SetConsoleTextAttribute(get_console_handle(), 7);
 #else
@@ -87,52 +110,60 @@ namespace console
 
 	void info(const char* message, ...)
 	{
+		stdout_lock _{};
+		
 		va_list ap;
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_INFO);
-		printf("INFO  - %s\n", format(&ap, message));
+		printf("[+]  - %s\n", format(&ap, message));
 
 		va_end(ap);
 	}
 
 	void warn(const char* message, ...)
 	{
+		stdout_lock _{};
+		
 		va_list ap;
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_WARN);
-		printf("WARN  - %s\n", format(&ap, message));
+		printf("[!] %s\n", format(&ap, message));
 
 		va_end(ap);
 	}
 
 	void error(const char* message, ...)
 	{
+		stdout_lock _{};
+		
 		va_list ap;
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_ERROR);
-		printf("ERROR - %s\n", format(&ap, message));
+		printf("[-] %s\n", format(&ap, message));
 
 		va_end(ap);
 	}
 
-#ifdef DEBUG
-	void debug(const char* message, ...)
+	void log(const char* message, ...)
 	{
+		stdout_lock _{};
+		
 		va_list ap;
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_DEBUG);
-		printf("DEBUG - %s\n", format(&ap, message));
+		printf("[*] %s\n", format(&ap, message));
 
 		va_end(ap);
 	}
-#endif
 
 	void set_title(const std::string& title)
 	{
+		stdout_lock _{};
+		
 #ifdef _WIN32
 		SetConsoleTitleA(title.data());
 #else

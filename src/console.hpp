@@ -7,14 +7,7 @@ namespace console
 	void info(const char* message, ...);
 	void warn(const char* message, ...);
 	void error(const char* message, ...);
-
-#ifdef DEBUG
-	void debug(const char* message, ...);
-#else
-	static void debug(const char*, ...)
-	{
-	}
-#endif
+	void log(const char* message, ...);
 
 	void set_title(const std::string& title);
 
