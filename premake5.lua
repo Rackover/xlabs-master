@@ -41,7 +41,16 @@ configurations {"Debug", "Release"}
 architecture "x64"
 platforms "x64"
 
-buildoptions "/std:c++latest"
+filter "toolset:gcc*"
+	buildoptions {
+		"-std=c++17"
+	}
+filter "toolset:msc*"
+	buildoptions {
+		"/std:c++latest"
+	}
+filter {}
+
 systemversion "latest"
 symbols "On"
 staticruntime "On"
@@ -58,9 +67,6 @@ if os.getenv("CI") then
 end
 
 flags {"NoIncrementalLink", "NoMinimalRebuild", "MultiProcessorCompile", "No64BitChecks"}
-
-configuration "windows"
-defines {"_WINDOWS", "WIN32"}
 
 configuration "Release"
 optimize "Speed"
@@ -89,7 +95,19 @@ files {"./src/**.rc", "./src/**.hpp", "./src/**.cpp"}
 
 includedirs {"./src", "%{prj.location}/src"}
 
-resincludedirs {"$(ProjectDir)src"}
+filter "system:windows"
+	files {
+		"./src/**.rc",
+	}
+filter { "system:windows", "toolset:not msc*" }
+	resincludedirs {
+		"%{_MAIN_SCRIPT_DIR}/src"
+	}
+filter { "system:windows", "toolset:msc*" }
+	resincludedirs {
+		"$(ProjectDir)src" -- fix for VS IDE
+	}
+filter {}
 
 dependencies.imports()
 
