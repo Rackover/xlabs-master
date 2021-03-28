@@ -63,17 +63,18 @@ namespace console
 	}
 #endif
 
-		const char* format(va_list* ap, const char* message)
+		std::string_view format(va_list* ap, const char* message)
 		{
 			static thread_local char buffer[0x1000];
 
 #ifdef _WIN32
-			_vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), message, *ap);
+			const int count = _vsnprintf_s(buffer, sizeof(buffer), sizeof(buffer), message, *ap);
 #else
-			vsnprintf(buffer, sizeof(buffer), message, *ap);
+			const int count = vsnprintf(buffer, sizeof(buffer), message, *ap);
 #endif
 
-			return buffer;
+			if(count < 0) return {};
+			return {buffer, static_cast<size_t>(count)};
 		}
 
 #ifdef _WIN32
@@ -116,7 +117,8 @@ namespace console
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_INFO);
-		printf("[+]  - %s\n", format(&ap, message));
+		const auto data = format(&ap, message);
+		printf("[+] %.*s\n", static_cast<int>(data.size()), data.data());
 
 		va_end(ap);
 	}
@@ -129,7 +131,8 @@ namespace console
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_WARN);
-		printf("[!] %s\n", format(&ap, message));
+		const auto data = format(&ap, message);
+		printf("[!] %.*s\n", static_cast<int>(data.size()), data.data());
 
 		va_end(ap);
 	}
@@ -142,7 +145,8 @@ namespace console
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_ERROR);
-		printf("[-] %s\n", format(&ap, message));
+		const auto data = format(&ap, message);
+		printf("[-] %.*s\n", static_cast<int>(data.size()), data.data());
 
 		va_end(ap);
 	}
@@ -155,7 +159,8 @@ namespace console
 		va_start(ap, message);
 
 		set_color(COLOR_LOG_DEBUG);
-		printf("[*] %s\n", format(&ap, message));
+		const auto data = format(&ap, message);
+		printf("[*] %.*s\n", static_cast<int>(data.size()), data.data());
 
 		va_end(ap);
 	}
