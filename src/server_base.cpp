@@ -81,7 +81,7 @@ bool server_base::receive_data() const
 void server_base::parse_data(const network::address& target, const std::string_view& data) const
 {
 	const auto separator = find_separator(data);
-	if(separator > 0)
+	if(separator <= 0)
 	{
 		this->dispatch_command(target, data, {});
 	}
@@ -95,5 +95,5 @@ void server_base::parse_data(const network::address& target, const std::string_v
 void server_base::dispatch_command(const network::address& target, const std::string_view& command, const std::string_view& data) const
 {
 	console::info("%s: %.*s", target.to_string().data(), command.size(), command.data());
-	console::info("\t(%X) %.*s",  data.size(), data.size(), data.data());
+	console::info("\t(%d) '%.*s'",  data.size(), data.size(), data.data());
 }
