@@ -116,11 +116,27 @@ group "Dependencies"
 dependencies.projects()
 
 rule "ProtobufCompiler"
-display "Protobuf compiler"
-location "./build"
-fileExtension ".proto"
-buildmessage "Compiling %(Identity) with protoc..."
-buildcommands {'@echo off', 'path "$(SolutionDir)\\..\\tools"',
-			   'if not exist "$(ProjectDir)\\src\\proto" mkdir "$(ProjectDir)\\src\\proto"',
-			   'protoc --error_format=msvs -I=%(RelativeDir) --cpp_out=src\\proto %(Identity)'}
-buildoutputs {'$(ProjectDir)\\src\\proto\\%(Filename).pb.cc', '$(ProjectDir)\\src\\proto\\%(Filename).pb.h'}
+	display "Protobuf compiler"
+	location "./build"
+	fileExtension ".proto"
+	buildoutputs {
+		'%{prj.location}/src/proto/%{file.basename}.pb.cc',
+		'%{prj.location}/src/proto/%{file.basename}.pb.h',
+	}
+	filter "action:vs*"
+		buildmessage "Compiling %(Identity) with protoc..."
+		buildcommands {
+			'@echo off',
+			'path "$(SolutionDir)..\\tools\\windows"',
+			'if not exist "$(ProjectDir)\\src\\proto" {MKDIR} "$(ProjectDir)\\src\\proto"',
+			'protoc --error_format=msvs -I=%(RelativeDir) --cpp_out=src\\proto %(Identity)',
+		}
+
+	filter "action:not vs*"
+		protocbin = "%{_MAIN_SCRIPT_DIR}/tools/"  .. os.host() .. "/protoc"
+		buildcommands {
+			'mkdir -p "%{prj.location}/src/proto"',
+			'"%{protocbin}" "-I=%{path.getdirectory(file.relpath)}" "--cpp_out=%{prj.location}/src/proto" "%{file.relpath}"',
+		}
+
+	filter {}

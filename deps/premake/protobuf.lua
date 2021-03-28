@@ -6,6 +6,12 @@ function protobuf.import()
 	links {
 		"protobuf"
 	}
+	
+	if os.istarget("linux") then
+		buildoptions { "-pthread" }
+		linkoptions { "-pthread" }
+	end
+
 
 	protobuf.includes()
 end
@@ -36,8 +42,15 @@ function protobuf.project()
 
 			path.join(protobuf.source, "src/google/protobuf/arena_nc.cc"),
 			path.join(protobuf.source, "src/google/protobuf/util/internal/error_listener.cc"),
-			path.join(protobuf.source, "**/*_gcc.cc"),
 		}
+		
+		filter "not toolset:gcc*"
+			removefiles {
+				path.join(protobuf.source, "**/*_gcc.cc"),
+			}
+		filter "toolset:gcc*"
+			defines { "HAVE_PTHREAD" }
+		filter {}
 		
 		rules {
 			"ProtobufCompiler"
