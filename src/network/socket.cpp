@@ -83,7 +83,7 @@ namespace network
 			return false;
 		}
 
-		data.assign(buffer, buffer + len);
+		data.assign(buffer, buffer + result);
 		return true;
 	}
 

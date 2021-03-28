@@ -4,16 +4,16 @@
 
 namespace
 {
-	bool is_command(const std::string& data)
+	bool is_command(const std::string_view& data)
 	{
 		return data.size() > 4 && *reinterpret_cast<const int32_t*>(data.data()) == -1;
 	}
 
-	int find_separator(const std::string& data)
+	int find_separator(const std::string_view& data)
 	{
 		for(size_t i = 4; i < data.size(); ++i)
 		{
-			auto& chr = data[i];
+			const auto& chr = data[i];
 			
 			if(chr == ' ' || chr == '\n' || chr == '\0')
 			{
@@ -73,22 +73,21 @@ bool server_base::receive_data() const
 		return false;
 	}
 
-	this->parse_data(address, data);
+	this->parse_data(address, std::string_view{data.data() + 4, data.size() - 4});
 
 	return true;
 }
 
-void server_base::parse_data(const network::address& target, std::string& data) const
+void server_base::parse_data(const network::address& target, const std::string_view& data) const
 {
 	const auto separator = find_separator(data);
 	if(separator > 0)
 	{
-		data[separator] = 0;
-		this->dispatch_command(target, std::string_view{data.data() + 4, data.size() - 4}, {});
+		this->dispatch_command(target, data, {});
 	}
 	else
 	{
-		this->dispatch_command(target, std::string_view{data.data() + 4, static_cast<size_t>(separator - 4)},
+		this->dispatch_command(target, std::string_view{data.data(), static_cast<size_t>(separator)},
 			std::string_view{data.data() + (separator + 1), data.size() - (separator + 1)});
 	}
 }
@@ -96,5 +95,5 @@ void server_base::parse_data(const network::address& target, std::string& data) 
 void server_base::dispatch_command(const network::address& target, const std::string_view& command, const std::string_view& data) const
 {
 	console::info("%s: %.*s", target.to_string().data(), command.size(), command.data());
-	(void)data;
+	console::info("\t(%X) %.*s",  data.size(), data.size(), data.data());
 }
