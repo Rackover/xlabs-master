@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #pragma once
 
 #pragma warning(push)
@@ -29,6 +30,8 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
+#endif
+
 // min and max is required by gdi, therefore NOMINMAX won't work
 #ifdef max
 #undef max
@@ -57,6 +60,7 @@
 
 #include <gsl/gsl>
 
+#ifdef _WIN32
 #pragma warning(pop)
 #pragma warning(disable: 4100)
 
@@ -64,5 +68,6 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "urlmon.lib" )
 #pragma comment(lib, "iphlpapi.lib")
+#endif
 
 using namespace std::literals;
