@@ -30,6 +30,18 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
+#else
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define ZeroMemory(x, y) memset(x, 0, y)
+
 #endif
 
 // min and max is required by gdi, therefore NOMINMAX won't work
@@ -40,6 +52,11 @@
 #ifdef min
 #undef min
 #endif
+
+#include <cstdio>
+#include <cstdint>
+#include <csignal>
+#include <cstdarg>
 
 #include <map>
 #include <atomic>

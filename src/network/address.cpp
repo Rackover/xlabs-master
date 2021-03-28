@@ -43,7 +43,7 @@ namespace network
 
 	std::string address::to_string() const
 	{
-		char buffer[MAX_PATH] = {0};
+		char buffer[1000] = {0};
 		inet_ntop(this->address_.sin_family, &this->address_.sin_addr, buffer, sizeof(buffer));
 
 		return std::string(buffer) + ":"s + std::to_string(this->get_port());
@@ -52,30 +52,33 @@ namespace network
 	bool address::is_local() const
 	{
 		// According to: https://en.wikipedia.org/wiki/Private_network
+		
+		uint8_t bytes[4];
+		*reinterpret_cast<uint32_t*>(&bytes) = this->address_.sin_addr.s_addr;
 
 		// 10.X.X.X
-		if (this->address_.sin_addr.S_un.S_un_b.s_b1 == 10)
+		if (bytes[0] == 10)
 		{
 			return true;
 		}
 
 		// 192.168.X.X
-		if (this->address_.sin_addr.S_un.S_un_b.s_b1 == 192
-			&& this->address_.sin_addr.S_un.S_un_b.s_b2 == 168)
+		if (bytes[0] == 192
+			&& bytes[1] == 168)
 		{
 			return true;
 		}
 
 		// 172.16.X.X - 172.31.X.X
-		if (this->address_.sin_addr.S_un.S_un_b.s_b1 == 172
-			&& this->address_.sin_addr.S_un.S_un_b.s_b2 >= 16
-			&& this->address_.sin_addr.S_un.S_un_b.s_b2 < 32)
+		if (bytes[0] == 172
+			&& bytes[1] >= 16
+			&& bytes[1] < 32)
 		{
 			return true;
 		}
 
 		// 127.0.0.1
-		if (this->address_.sin_addr.S_un.S_addr == 0x0100007F)
+		if (this->address_.sin_addr.s_addr == 0x0100007F)
 		{
 			return true;
 		}
@@ -109,7 +112,7 @@ namespace network
 		if (pos != std::string::npos)
 		{
 			auto port = addr.substr(pos + 1);
-			this->set_port(USHORT(atoi(port.data())));
+			this->set_port(uint16_t(atoi(port.data())));
 
 			addr = addr.substr(0, pos);
 		}

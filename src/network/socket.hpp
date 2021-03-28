@@ -24,6 +24,14 @@ namespace network
 		bool set_blocking(bool blocking);
 
 	private:
+#ifdef _WIN32
+		using socklen_t = int;
+#else
+		using SOCKET = int;
+#define INVALID_SOCKET  (SOCKET)(~0)
+#define SOCKET_ERROR            (-1)
+#endif
+		
 		SOCKET socket_ = INVALID_SOCKET;
 	};
 }

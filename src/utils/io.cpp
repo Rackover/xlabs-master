@@ -2,17 +2,18 @@
 
 #include "io.hpp"
 #include <fstream>
+#include <ios>
 
 namespace utils::io
 {
 	bool remove_file(const std::string& file)
 	{
-		return DeleteFileA(file.data()) == TRUE;
+		return remove(file.data()) == 0;
 	}
 
 	bool move_file(const std::string& src, const std::string& target)
 	{
-		return MoveFileA(src.data(), target.data()) == TRUE;
+		return rename(src.data(), target.data()) == 0;
 	}
 
 	bool file_exists(const std::string& file)
@@ -28,8 +29,13 @@ namespace utils::io
 			create_directory(file.substr(0, pos));
 		}
 
-		std::ofstream stream(
-			file, std::ios::binary | std::ofstream::out | (append ? std::ofstream::app : 0));
+		auto mode = std::ios::binary | std::ofstream::out;
+		if(append)
+		{
+			mode |= std::ofstream::app;
+		}
+		
+		std::ofstream stream(file, mode);
 
 		if (stream.is_open())
 		{

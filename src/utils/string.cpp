@@ -36,7 +36,7 @@ namespace utils::string
 
 	std::string to_lower(std::string text)
 	{
-		std::ranges::transform(text, text.begin(), [](const char input)
+		std::transform(text.begin(), text.end(), text.begin(), [](const char input)
 		{
 			return static_cast<char>(tolower(input));
 		});
@@ -46,7 +46,7 @@ namespace utils::string
 
 	std::string to_upper(std::string text)
 	{
-		std::ranges::transform(text, text.begin(), [](const char input)
+		std::transform(text.begin(), text.end(), text.begin(), [](const char input)
 		{
 			return static_cast<char>(toupper(input));
 		});
@@ -82,29 +82,6 @@ namespace utils::string
 		return result;
 	}
 
-	std::string get_clipboard_data()
-	{
-		if (OpenClipboard(nullptr))
-		{
-			std::string data;
-
-			auto* const clipboard_data = GetClipboardData(1u);
-			if (clipboard_data)
-			{
-				auto* const cliptext = static_cast<char*>(GlobalLock(clipboard_data));
-				if (cliptext)
-				{
-					data.append(cliptext);
-					GlobalUnlock(clipboard_data);
-				}
-			}
-			CloseClipboard();
-
-			return data;
-		}
-		return {};
-	}
-
 	void strip(const char* in, char* out, int max)
 	{
 		if (!in || !out) return;
@@ -131,8 +108,10 @@ namespace utils::string
 		*out = '\0';
 	}
 
+#ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable: 4100)
+#endif
 	std::string convert(const std::wstring& wstr)
 	{
 		std::string result;
@@ -158,7 +137,9 @@ namespace utils::string
 
 		return result;
 	}
+#ifdef _WIN32
 #pragma warning(pop)
+#endif
 
 	std::string replace(std::string str, const std::string& from, const std::string& to)
 	{

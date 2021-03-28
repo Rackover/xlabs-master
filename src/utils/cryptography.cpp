@@ -78,7 +78,7 @@ namespace utils::cryptography
 	std::string ecc::key::get_public_key() const
 	{
 		uint8_t buffer[512] = {0};
-		DWORD length = sizeof(buffer);
+		unsigned long length = sizeof(buffer);
 
 		if (ecc_ansi_x963_export(&this->key_storage_, buffer, &length) == CRYPT_OK)
 		{
@@ -92,7 +92,7 @@ namespace utils::cryptography
 	{
 		this->free();
 
-		if (ecc_ansi_x963_import(reinterpret_cast<const uint8_t*>(pub_key_buffer.data()), ULONG(pub_key_buffer.size()),
+		if (ecc_ansi_x963_import(reinterpret_cast<const uint8_t*>(pub_key_buffer.data()), static_cast<unsigned long>(pub_key_buffer.size()),
 		                         &this->key_storage_) != CRYPT_OK)
 		{
 			ZeroMemory(&this->key_storage_, sizeof(this->key_storage_));
@@ -103,7 +103,7 @@ namespace utils::cryptography
 	{
 		this->free();
 
-		if (ecc_import(reinterpret_cast<const uint8_t*>(key.data()), ULONG(key.size()), &this->key_storage_) != CRYPT_OK
+		if (ecc_import(reinterpret_cast<const uint8_t*>(key.data()), static_cast<unsigned long>(key.size()), &this->key_storage_) != CRYPT_OK
 		)
 		{
 			ZeroMemory(&this->key_storage_, sizeof(this->key_storage_));
@@ -113,7 +113,7 @@ namespace utils::cryptography
 	std::string ecc::key::serialize(const int type) const
 	{
 		uint8_t buffer[4096] = {0};
-		DWORD length = sizeof(buffer);
+		unsigned long length = sizeof(buffer);
 
 		if (ecc_export(buffer, &length, type, &this->key_storage_) == CRYPT_OK)
 		{
@@ -185,11 +185,11 @@ namespace utils::cryptography
 		if (!key.is_valid()) return "";
 
 		uint8_t buffer[512];
-		DWORD length = sizeof(buffer);
+		unsigned long length = sizeof(buffer);
 
 		initialize_math();
 		register_prng(&sprng_desc);
-		ecc_sign_hash(reinterpret_cast<const uint8_t*>(message.data()), ULONG(message.size()), buffer, &length, nullptr,
+		ecc_sign_hash(reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()), buffer, &length, nullptr,
 		              find_prng("sprng"), key.get());
 
 		return std::string(reinterpret_cast<char*>(buffer), length);
@@ -202,8 +202,8 @@ namespace utils::cryptography
 		initialize_math();
 
 		auto result = 0;
-		return (ecc_verify_hash(reinterpret_cast<const uint8_t*>(signature.data()), ULONG(signature.size()),
-		                        reinterpret_cast<const uint8_t*>(message.data()), ULONG(message.size()), &result,
+		return (ecc_verify_hash(reinterpret_cast<const uint8_t*>(signature.data()), static_cast<unsigned long>(signature.size()),
+		                        reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()), &result,
 		                        key.get()) == CRYPT_OK && result != 0);
 	}
 
@@ -231,7 +231,7 @@ namespace utils::cryptography
 		const auto prng_id = find_prng("yarrow");
 
 		rsa_key new_key;
-		rsa_import(PBYTE(key.data()), ULONG(key.size()), &new_key);
+		rsa_import(reinterpret_cast<const uint8_t*>(key.data()), static_cast<unsigned long>(key.size()), &new_key);
 
 		const auto yarrow = std::make_unique<prng_state>();
 		rng_make_prng(128, prng_id, yarrow.get(), nullptr);
@@ -240,12 +240,12 @@ namespace utils::cryptography
 		unsigned long length = sizeof(buffer);
 
 		const auto rsa_result = rsa_encrypt_key( //
-			PBYTE(data.data()), //
-			ULONG(data.size()), //
+			reinterpret_cast<const uint8_t*>(data.data()), //
+			static_cast<unsigned long>(data.size()), //
 			buffer, //
 			&length, //
-			PBYTE(hash.data()), //
-			ULONG(hash.size()), //
+			reinterpret_cast<const uint8_t*>(hash.data()), //
+			static_cast<unsigned long>(hash.size()), //
 			yarrow.get(), //
 			prng_id, //
 			find_hash("sha1"), //
@@ -256,7 +256,7 @@ namespace utils::cryptography
 
 		if (rsa_result == CRYPT_OK)
 		{
-			return std::string(PCHAR(buffer), length);
+			return std::string(reinterpret_cast<char*>(buffer), length);
 		}
 
 		return {};
@@ -290,7 +290,7 @@ namespace utils::cryptography
 		cbc_start(des3, reinterpret_cast<const uint8_t*>(iv.data()), reinterpret_cast<const uint8_t*>(key.data()),
 		          static_cast<int>(key.size()), 0, &cbc);
 		cbc_encrypt(reinterpret_cast<const uint8_t*>(data.data()),
-		            reinterpret_cast<uint8_t*>(const_cast<char*>(enc_data.data())), ULONG(data.size()), &cbc);
+		            reinterpret_cast<uint8_t*>(enc_data.data()), static_cast<unsigned long>(data.size()), &cbc);
 		cbc_done(&cbc);
 
 		return enc_data;
@@ -309,7 +309,7 @@ namespace utils::cryptography
 		cbc_start(des3, reinterpret_cast<const uint8_t*>(iv.data()), reinterpret_cast<const uint8_t*>(key.data()),
 		          static_cast<int>(key.size()), 0, &cbc);
 		cbc_decrypt(reinterpret_cast<const uint8_t*>(data.data()),
-		            reinterpret_cast<uint8_t*>(const_cast<char*>(dec_data.data())), ULONG(data.size()), &cbc);
+		            reinterpret_cast<uint8_t*>(const_cast<char*>(dec_data.data())), static_cast<unsigned long>(data.size()), &cbc);
 		cbc_done(&cbc);
 
 		return dec_data;
@@ -326,7 +326,7 @@ namespace utils::cryptography
 
 		hash_state state;
 		tiger_init(&state);
-		tiger_process(&state, data, ULONG(length));
+		tiger_process(&state, data, static_cast<unsigned long>(length));
 		tiger_done(&state, buffer);
 
 		std::string hash(reinterpret_cast<char*>(buffer), sizeof(buffer));
@@ -442,7 +442,7 @@ namespace utils::cryptography
 
 		hash_state state;
 		sha1_init(&state);
-		sha1_process(&state, data, ULONG(length));
+		sha1_process(&state, data, static_cast<unsigned long>(length));
 		sha1_done(&state, buffer);
 
 		std::string hash(reinterpret_cast<char*>(buffer), sizeof(buffer));
@@ -462,7 +462,7 @@ namespace utils::cryptography
 
 		hash_state state;
 		sha256_init(&state);
-		sha256_process(&state, data, ULONG(length));
+		sha256_process(&state, data, static_cast<unsigned long>(length));
 		sha256_done(&state, buffer);
 
 		std::string hash(reinterpret_cast<char*>(buffer), sizeof(buffer));
@@ -482,7 +482,7 @@ namespace utils::cryptography
 
 		hash_state state;
 		sha512_init(&state);
-		sha512_process(&state, data, ULONG(length));
+		sha512_process(&state, data, static_cast<unsigned long>(length));
 		sha512_done(&state, buffer);
 
 		std::string hash(reinterpret_cast<char*>(buffer), sizeof(buffer));

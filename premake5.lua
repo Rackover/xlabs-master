@@ -89,8 +89,6 @@ language "C++"
 pchheader "std_include.hpp"
 pchsource "src/std_include.cpp"
 
-linkoptions {"/IGNORE:4254", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/PDBCompress"}
-
 files {"./src/**.rc", "./src/**.hpp", "./src/**.cpp"}
 
 includedirs {"./src", "%{prj.location}/src"}
@@ -104,6 +102,7 @@ filter { "system:windows", "toolset:not msc*" }
 		"%{_MAIN_SCRIPT_DIR}/src"
 	}
 filter { "system:windows", "toolset:msc*" }
+	linkoptions {"/IGNORE:4254", "/SAFESEH:NO", "/LARGEADDRESSAWARE", "/PDBCompress"}
 	resincludedirs {
 		"$(ProjectDir)src" -- fix for VS IDE
 	}

@@ -19,7 +19,7 @@ namespace utils::string
 		{
 		}
 
-		char* get(const char* format, const va_list ap)
+		char* get(const char* format, va_list ap)
 		{
 			++this->current_buffer_ %= ARRAYSIZE(this->string_pool_);
 			auto entry = &this->string_pool_[this->current_buffer_];
@@ -31,7 +31,12 @@ namespace utils::string
 
 			while (true)
 			{
+#ifdef _WIN32
 				const int res = vsnprintf_s(entry->buffer, entry->size, _TRUNCATE, format, ap);
+#else
+				const int res = vsnprintf(entry->buffer, entry->size, format, ap);
+#endif
+
 				if (res > 0) break; // Success
 				if (res == 0) return nullptr; // Error
 
@@ -88,8 +93,6 @@ namespace utils::string
 	bool ends_with(const std::string& text, const std::string& substring);
 
 	std::string dump_hex(const std::string& data, const std::string& separator = " ");
-
-	std::string get_clipboard_data();
 
 	void strip(const char* in, char* out, int max);
 

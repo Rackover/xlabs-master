@@ -6,6 +6,7 @@ namespace network
 {
 	namespace
 	{
+#ifdef _WIN32
 		class wsa_initializer
 		{
 		public:
@@ -23,6 +24,7 @@ namespace network
 				WSACleanup();
 			}
 		} _;
+#endif
 	}
 
 	socket::socket()
@@ -34,7 +36,11 @@ namespace network
 	{
 		if (this->socket_ != INVALID_SOCKET)
 		{
+#ifdef _WIN32
 			closesocket(this->socket_);
+#else
+			close(this->socket_);
+#endif
 		}
 	}
 
@@ -69,7 +75,7 @@ namespace network
 	bool socket::receive(address& source, std::string& data) const
 	{
 		char buffer[0x2000];
-		int len = sizeof(source.get_in_addr());
+		socklen_t len = sizeof(source.get_in_addr());
 
 		const auto result = recvfrom(this->socket_, buffer, sizeof(buffer), 0, &source.get_addr(), &len);
 		if (result == SOCKET_ERROR) // Probably WSAEWOULDBLOCK
