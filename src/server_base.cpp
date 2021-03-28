@@ -38,12 +38,20 @@ server_base::server_base(const network::address& bind_addr)
 void server_base::run()
 {
 	this->stopped_ = false;
+	std::thread thread{[&]()
+	{
+		this->run_socket();
+	}};
+	
 	while (!this->stopped_)
 	{
-		this->receive_data();
-		this->scheduler_.run_frame();
-		
-		std::this_thread::sleep_for(1ms);
+		this->run_frame();
+		std::this_thread::sleep_for(100ms);
+	}
+
+	if(thread.joinable())
+	{
+		thread.join();
 	}
 }
 
@@ -52,12 +60,23 @@ void server_base::stop()
 	stopped_ = true;
 }
 
-void server_base::send_command(const network::address& target, const std::string& command, const std::string& data, const std::string& separator) const
+void server_base::send(const network::address& target, const std::string& command, const std::string& data, const std::string& separator) const
 {
-	socket_.send(target, "\xFF\xFF\xFF\xFF" + command + separator + data);
+	this->socket_.send(target, "\xFF\xFF\xFF\xFF" + command + separator + data);
 }
 
-bool server_base::receive_data() const
+void server_base::run_socket()
+{
+	while(!this->stopped_)
+	{
+		if(!this->receive_data())
+		{
+			this->socket_.sleep(100ms);
+		}
+	}
+}
+
+bool server_base::receive_data()
 {
 	std::string data{};
 	network::address address{};
@@ -78,22 +97,16 @@ bool server_base::receive_data() const
 	return true;
 }
 
-void server_base::parse_data(const network::address& target, const std::string_view& data) const
+void server_base::parse_data(const network::address& target, const std::string_view& data)
 {
 	const auto separator = find_separator(data);
 	if(separator <= 0)
 	{
-		this->dispatch_command(target, data, {});
+		this->handle_command(target, data, {});
 	}
 	else
 	{
-		this->dispatch_command(target, std::string_view{data.data(), static_cast<size_t>(separator)},
+		this->handle_command(target, std::string_view{data.data(), static_cast<size_t>(separator)},
 			std::string_view{data.data() + (separator + 1), data.size() - (separator + 1)});
 	}
-}
-
-void server_base::dispatch_command(const network::address& target, const std::string_view& command, const std::string_view& data) const
-{
-	console::info("%s: %.*s", target.to_string().data(), command.size(), command.data());
-	console::info("\t(%d) '%.*s'",  data.size(), data.size(), data.data());
 }

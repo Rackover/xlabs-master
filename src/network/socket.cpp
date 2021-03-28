@@ -7,7 +7,7 @@ namespace network
 	namespace
 	{
 #ifdef _WIN32
-		class wsa_initializer
+		[[maybe_unused]] class wsa_initializer
 		{
 		public:
 			wsa_initializer()
@@ -98,5 +98,32 @@ namespace network
 		flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
 		return fcntl(this->socket_, F_SETFL, flags) == 0;
 #endif
+	}
+
+	bool socket::sleep(const std::chrono::milliseconds timeout) const
+	{
+		fd_set fdr;
+		FD_ZERO(&fdr);
+		FD_SET(this->socket_, &fdr);
+
+		const auto msec = timeout.count();
+		
+		timeval tv{};
+		tv.tv_sec = static_cast<long>(msec / 1000ll);
+		tv.tv_usec = static_cast<long>((msec % 1000) * 1000);
+
+		const auto retval = select(static_cast<int>(this->socket_) + 1, &fdr, nullptr, nullptr, &tv);
+		if (retval == SOCKET_ERROR)
+		{
+			std::this_thread::sleep_for(1ms);
+			return socket_is_ready;
+		}
+
+		if (retval > 0)
+		{
+			return socket_is_ready;
+		}
+
+		return !socket_is_ready;
 	}
 }

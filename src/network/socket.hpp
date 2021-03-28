@@ -23,6 +23,9 @@ namespace network
 
 		bool set_blocking(bool blocking);
 
+		static const bool socket_is_ready = true;
+		bool sleep(std::chrono::milliseconds timeout) const;
+
 	private:
 #ifdef _WIN32
 		using socklen_t = int;
