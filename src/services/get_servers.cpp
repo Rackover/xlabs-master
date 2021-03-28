@@ -6,7 +6,7 @@ const char* get_servers::get_command() const
 	return "getservers";
 }
 
-void get_servers::handle_command(const network::address& target, const std::string_view& data)
+void get_servers::handle_command([[maybe_unused]] const network::address& target, [[maybe_unused]] const std::string_view& data)
 {
 	
 }
