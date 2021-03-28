@@ -26,6 +26,12 @@ function minizip.project()
 			path.join(minizip.source, "*.h"),
 			path.join(minizip.source, "*.c"),
 		}
+		
+		filter "system:not windows"
+		removefiles {
+			path.join(minizip.source, "iowin32.c"),
+		}
+		filter {}
 
 		removefiles {
 			path.join(minizip.source, "miniunz.c"),
