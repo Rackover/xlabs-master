@@ -89,7 +89,7 @@ void server_base::parse_data(const network::address& target, std::string& data) 
 	else
 	{
 		this->dispatch_command(target, std::string_view{data.begin() + 4, data.begin() + separator},
-			std::string_view{data.begin() + separator + 1, data.end()});
+			std::string_view{data.begin() + (separator + 1), data.end()});
 	}
 }
 
