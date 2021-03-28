@@ -5,10 +5,13 @@
 
 namespace
 {
-	void unsafe_main()
+	void unsafe_main(const uint16_t port)
 	{
-		console::log("Creating socket on port 20811");
-		server s{network::address{"0.0.0.0:20811"}};
+		console::log("Creating socket on port %hu", port);
+		
+		network::address a{"0.0.0.0"};
+		a.set_port(port);
+		server s{a};
 		
 		console::signal_handler handler([&s]()
 		{
@@ -22,7 +25,7 @@ namespace
 }
 
 
-int main()
+int main(int argc, const char** argv)
 {
 	auto result = 0;
 	
@@ -31,7 +34,7 @@ int main()
 
 	try
 	{
-		unsafe_main();
+		unsafe_main(argc > 1 ? static_cast<uint16_t>(atoi(argv[1])) : 20810);
 	}
 	catch(std::exception& e)
 	{
