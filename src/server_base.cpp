@@ -84,12 +84,12 @@ void server_base::parse_data(const network::address& target, std::string& data) 
 	if(separator > 0)
 	{
 		data[separator] = 0;
-		this->dispatch_command(target, std::string_view{data.begin() + 4, data.end()}, {});
+		this->dispatch_command(target, std::string_view{data.data() + 4, data.size() - 4}, {});
 	}
 	else
 	{
-		this->dispatch_command(target, std::string_view{data.begin() + 4, data.begin() + separator},
-			std::string_view{data.begin() + (separator + 1), data.end()});
+		this->dispatch_command(target, std::string_view{data.data() + 4, static_cast<size_t>(separator - 4)},
+			std::string_view{data.data() + (separator + 1), data.size() - (separator + 1)});
 	}
 }
 
