@@ -5,7 +5,7 @@
 #define COLOR_LOG_INFO 11//15
 #define COLOR_LOG_WARN 14
 #define COLOR_LOG_ERROR 12
-#define COLOR_LOG_DEBUG 7// 15
+#define COLOR_LOG_DEBUG 15//7
 #else
 #define COLOR_LOG_INFO "\033[1;36;24;27m"//"\033[1;37;24;27m"
 #define COLOR_LOG_WARN "\033[1;33;24;27m"
