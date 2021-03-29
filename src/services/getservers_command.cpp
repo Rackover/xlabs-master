@@ -26,7 +26,7 @@ void getservers_command::handle_command(const network::address& target, const st
 		throw execution_exception{"Invalid game type: " + game};
 	}
 
-	int count = 0;
+	auto count = 0;
 	std::string response{};
 
 	this->get_server().get_server_list().find_registered_servers(game_type, protocol, [this, &response, &count](const game_server&,
@@ -50,7 +50,5 @@ void getservers_command::handle_command(const network::address& target, const st
 
 	this->get_server().send(target, "getserversResponse", response);
 
-	#ifdef DEBUG
-	console::log("Sent %d servers for game %s", count, game.data());
-#endif
+	console::log("Sent %d servers for game %s: ", count, game.data(), target.to_string().data());
 }

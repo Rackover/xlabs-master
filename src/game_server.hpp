@@ -45,6 +45,7 @@ struct game_server
 	
 	game_type game{game_type::unknown};
 	int protocol{};
+	std::string name{};
 	std::string challenge{};
 	utils::info_string info_string{};
 	std::chrono::high_resolution_clock::time_point heartbeat{};
