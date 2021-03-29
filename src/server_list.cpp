@@ -31,7 +31,7 @@ bool server_list::find_server(const network::address& address, const const_acces
 	});
 }
 
-void server_list::find_registered_servers(game_type game, int protocol, const access_func& accessor)
+void server_list::find_registered_servers(const game_type game, const int protocol, const access_func& accessor)
 {
 	this->iterate_servers([&](iteration_context& context)
 	{
@@ -45,12 +45,12 @@ void server_list::find_registered_servers(game_type game, int protocol, const ac
 	});
 }
 
-void server_list::find_registered_servers(game_type game, int protocol, const const_access_func& accessor) const
+void server_list::find_registered_servers(const game_type game, const int protocol, const const_access_func& accessor) const
 {
 	this->iterate_servers([&](const iteration_context& context)
 	{
 		const auto& server = context.get_server();
-		if(server.registered && server.game == game && server.protocol == protocol)
+		if (server.registered && server.game == game && server.protocol == protocol)
 		{
 			accessor(server, context.get_address());	
 		}
