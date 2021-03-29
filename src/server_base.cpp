@@ -40,6 +40,7 @@ void server_base::run()
 	this->stopped_ = false;
 	std::thread thread{[&]()
 	{
+		std::this_thread::sleep_for(30ms);
 		this->run_socket();
 	}};
 	

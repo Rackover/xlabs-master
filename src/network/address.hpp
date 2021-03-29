@@ -34,3 +34,11 @@ namespace network
 		void resolve(const std::string& hostname);
 	};
 }
+
+namespace std
+{
+    template<> struct hash<network::address>
+    {
+        std::size_t operator()(const network::address& a) const noexcept;
+    };
+}
