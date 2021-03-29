@@ -36,7 +36,7 @@ void info_response_command::handle_command(const network::address& target, const
 
 		server.registered = true;
 		server.state = game_server::state::can_ping;
-		server.protocol = atoi(info.get("gamename").data());
+		server.protocol = atoi(info.get("protocol").data());
 		server.heartbeat = std::chrono::high_resolution_clock::now();
 		server.info_string = std::move(info);
 	});
