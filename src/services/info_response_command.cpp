@@ -29,16 +29,17 @@ void info_response_command::handle_command(const network::address& target, const
 			throw execution_exception{"Invalid challenge"};
 		}
 
+		server.state = game_server::state::can_ping;
+		server.protocol = atoi(info.get("protocol").data());
+		server.heartbeat = std::chrono::high_resolution_clock::now();
+		server.info_string = std::move(info);
+
 		if (!server.registered)
 		{
 			console::log("Server registered for game %s (%i): %s", game.data(), server.protocol, address.to_string().data());
 		}
 
 		server.registered = true;
-		server.state = game_server::state::can_ping;
-		server.protocol = atoi(info.get("protocol").data());
-		server.heartbeat = std::chrono::high_resolution_clock::now();
-		server.info_string = std::move(info);
 	});
 
 	if(!found)
