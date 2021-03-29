@@ -2,13 +2,19 @@
 
 #include "service.hpp"
 #include "server_base.hpp"
+#include "server_list.hpp"
 
 class server : public server_base
 {
 public:
 	server(const network::address& bind_addr);
-	
+
+	server_list& get_server_list();
+	const server_list& get_server_list() const;
+
 private:
+	server_list server_list_;
+	
 	std::vector<std::unique_ptr<service>> services_;
 	std::unordered_map<std::string, service*> command_services_;
 

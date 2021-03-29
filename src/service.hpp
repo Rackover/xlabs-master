@@ -7,6 +7,12 @@ class server;
 class service
 {
 public:
+	class execution_exception : public std::runtime_error
+	{
+	public:
+		using std::runtime_error::runtime_error;
+	};
+	
 	service(server& server)
 		: server_(server)
 	{

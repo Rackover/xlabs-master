@@ -26,7 +26,6 @@ public:
 
 	void heartbeat(const network::address& address);
 	
-	
 private:
 	using list_type = std::unordered_map<network::address, game_server>;
 	utils::concurrency::container<list_type> servers_;

@@ -2,7 +2,7 @@
 
 #include "../service.hpp"
 
-class get_servers : public service
+class heartbeat_command : public service
 {
 public:
 	using service::service;

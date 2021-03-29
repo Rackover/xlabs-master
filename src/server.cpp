@@ -2,19 +2,42 @@
 #include "server.hpp"
 #include "console.hpp"
 
-#include "services/get_servers.hpp"
+#include "services/getservers_command.hpp"
+#include "services/heartbeat_command.hpp"
 
 server::server(const network::address& bind_addr)
 	: server_base(bind_addr)
 {
-	this->register_service<get_servers>();
+	this->register_service<getservers_command>();
+	this->register_service<heartbeat_command>();
+}
+
+server_list& server::get_server_list()
+{
+	return server_list_;
+}
+
+const server_list& server::get_server_list() const
+{
+	return server_list_;
 }
 
 void server::run_frame()
 {
 	for(auto& service : services_)
 	{
-		service->run_frame();
+		try
+		{
+			service->run_frame();
+		}
+		catch(const service::execution_exception& e)
+		{
+			console::warn("Execption in service: %s", e.what());
+		}
+		catch(const std::exception& e)
+		{
+			console::error("Fatal execption in service: %s", e.what());
+		}
 	}
 }
 
@@ -32,5 +55,16 @@ void server::handle_command(const network::address& target, const std::string_vi
 	console::log("Handling command (%s): %.*s", target.to_string().data(), command.size(), command.data());
 #endif
 
-	handler->second->handle_command(target, data);
+	try
+	{
+		handler->second->handle_command(target, data);
+	}
+	catch(const service::execution_exception& e)
+	{
+		console::warn("Execption in command %.*s (%s): %s", command.size(), command.data(), target.to_string().data(), e.what());
+	}
+	catch(const std::exception& e)
+	{
+		console::error("Fatal execption in command %.*s (%s): %s", command.size(), command.data(), target.to_string().data(), e.what());
+	}
 }
