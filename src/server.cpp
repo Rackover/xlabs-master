@@ -5,6 +5,9 @@
 
 #include "services/getservers_command.hpp"
 #include "services/heartbeat_command.hpp"
+#include "services/info_response_command.hpp"
+#include "services/ping_handler.hpp"
+#include "services/elimination_handler.hpp"
 
 server::server(const network::address& bind_addr)
 	: server_base(bind_addr)

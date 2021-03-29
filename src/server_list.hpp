@@ -1,8 +1,8 @@
 #pragma once
 
-#include "utils/concurrency.hpp"
-
 #include "game_server.hpp"
+#include "network/address.hpp"
+#include "utils/concurrency.hpp"
 
 class server_list
 {
@@ -28,8 +28,8 @@ public:
 	using iterate_func = std::function<void (iteration_context&)>;
 	using const_iterate_func = std::function<void (const iteration_context&)>;
 	
-	using access_func = std::function<void(game_server&)>;
-	using const_access_func = std::function<void(const game_server&)>;
+	using access_func = std::function<void(game_server&, const network::address&)>;
+	using const_access_func = std::function<void(const game_server&, const network::address&)>;
 	
 	server_list() = default;
 

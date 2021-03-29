@@ -11,7 +11,7 @@ bool server_list::find_server(const network::address& address, const access_func
 			return false;
 		}
 
-		accessor(i->second);
+		accessor(i->second, i->first);
 		return true;
 	});
 }
@@ -26,7 +26,7 @@ bool server_list::find_server(const network::address& address, const const_acces
 			return false;
 		}
 
-		accessor(i->second);
+		accessor(i->second, i->first);
 		return true;
 	});
 }
@@ -38,7 +38,7 @@ void server_list::find_registered_servers(game_type game, int protocol, const ac
 		auto& server = context.get_server();
 		if (server.registered && server.game == game && server.protocol == protocol)
 		{
-			accessor(server);	
+			accessor(server, context.get_address());	
 		}
 
 		return false;
@@ -52,7 +52,7 @@ void server_list::find_registered_servers(game_type game, int protocol, const co
 		const auto& server = context.get_server();
 		if(server.registered && server.game == game && server.protocol == protocol)
 		{
-			accessor(server);	
+			accessor(server, context.get_address());	
 		}
 	});
 }

@@ -8,5 +8,5 @@ const char* heartbeat_command::get_command() const
 
 void heartbeat_command::handle_command(const network::address& target, const std::string_view&)
 {
-	get_server().get_server_list().heartbeat(target);
+	this->get_server().get_server_list().heartbeat(target);
 }

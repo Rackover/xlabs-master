@@ -2,7 +2,7 @@
 
 #include "../service.hpp"
 
-class server_ping_handler : public service
+class elimination_handler : public service
 {
 public:
 	using service::service;

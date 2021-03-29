@@ -19,8 +19,31 @@ void getservers_command::handle_command(const network::address& target, const st
 
 	const auto& game = params[0];
 	const auto protocol = atoi(params[1].data());
-	const auto full = params.has("full");
-	const auto empty = params.has("empty");
 
-	console::info("%s requesting servers for %s (%d) - full: %d, empty: %d", target.to_string().data(), game.data(), protocol, full, empty);
+	const auto game_type = resolve_game_type(game);
+	if(game_type == game_type::unknown)
+	{
+		throw execution_exception{"Invalid game type: " + game};
+	}
+
+	std::string response{};
+
+	this->get_server().get_server_list().find_registered_servers(game_type, protocol, [this, &response](const game_server&,
+		const network::address& address)
+	{
+		const auto addr = address.get_in_addr().sin_addr.s_addr;
+		const auto port = htons(address.get_port());
+
+		response.push_back('\\');
+		response.append(reinterpret_cast<const char*>(&addr), 4);
+		response.append(reinterpret_cast<const char*>(&port), 2);
+	});
+
+	response.push_back('\\');
+	response.append("EOT");
+	response.push_back(0);
+	response.push_back(0);
+	response.push_back(0);
+
+	this->get_server().send(target, "getserversResponse", response);
 }
