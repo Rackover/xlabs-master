@@ -1,9 +1,6 @@
 #include <std_include.hpp>
 #include "heartbeat_command.hpp"
 
-#include "server.hpp"
-#include "../server_list.hpp"
-
 const char* heartbeat_command::get_command() const
 {
 	return "heartbeat";

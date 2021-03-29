@@ -1,8 +1,8 @@
 #pragma once
 
-#include "service.hpp"
 #include "server_base.hpp"
 #include "server_list.hpp"
+#include "service.hpp"
 
 class server : public server_base
 {

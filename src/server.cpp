@@ -1,5 +1,6 @@
 #include "std_include.hpp"
 #include "server.hpp"
+#include "service.hpp"
 #include "console.hpp"
 
 #include "services/getservers_command.hpp"

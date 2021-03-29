@@ -29,5 +29,4 @@ struct game_server
 	std::string challenge{};
 	utils::info_string info_string{};
 	std::chrono::high_resolution_clock::time_point heartbeat{};
-	network::address address{};
 };

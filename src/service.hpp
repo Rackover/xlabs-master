@@ -44,3 +44,7 @@ protected:
 private:
 	server& server_;
 };
+
+// server and service have a cycle, but fuck, it's easier that way
+// include guards should handle that
+#include "server.hpp"

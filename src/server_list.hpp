@@ -7,8 +7,26 @@
 class server_list
 {
 public:
-	using iterate_func = std::function<bool (game_server&)>;
-	using const_iterate_func = std::function<void (const game_server&)>;
+	class iteration_context
+	{
+	public:
+		friend server_list;
+
+		const network::address& get_address() const { return *this->address_; }
+		game_server& get_server() { return *this->server_; };
+		const game_server& get_server() const { return *this->server_; };
+		void remove_server() { this->remove_server_ = true; }
+		void stop_iterating() const { this->stop_iterating_ = true; }
+	
+	private:
+		game_server* server_{};
+		const network::address* address_{};
+		bool remove_server_{false};
+		mutable bool stop_iterating_{false};
+	};
+	
+	using iterate_func = std::function<void (iteration_context&)>;
+	using const_iterate_func = std::function<void (const iteration_context&)>;
 	
 	using access_func = std::function<void(game_server&)>;
 	using const_access_func = std::function<void(const game_server&)>;
