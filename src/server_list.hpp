@@ -18,8 +18,8 @@ public:
 	bool find_server(const network::address& address, const access_func& accessor);
 	bool find_server(const network::address& address, const const_access_func& accessor) const;
 
-	void find_registered_servers(game game, int protocol, const access_func& accessor);
-	void find_registered_servers(game game, int protocol, const const_access_func& accessor) const;
+	void find_registered_servers(game_type game, int protocol, const access_func& accessor);
+	void find_registered_servers(game_type game, int protocol, const const_access_func& accessor) const;
 
 	void iterate_servers(const iterate_func& iterator);
 	void iterate_servers(const const_iterate_func& iterator) const;

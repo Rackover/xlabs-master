@@ -3,7 +3,7 @@
 #include "utils/info_string.hpp"
 #include "network/address.hpp"
 
-enum class game
+enum class game_type
 {
 	unknown = 0,
 	iw4,
@@ -24,7 +24,7 @@ struct game_server
 	state state{state::can_ping};
 	bool registered{false};
 	
-	game game{game::unknown};
+	game_type game{game_type::unknown};
 	int protocol{};
 	std::string challenge{};
 	utils::info_string info_string{};
