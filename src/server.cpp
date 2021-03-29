@@ -14,6 +14,9 @@ server::server(const network::address& bind_addr)
 {
 	this->register_service<getservers_command>();
 	this->register_service<heartbeat_command>();
+	this->register_service<info_response_command>();
+	this->register_service<ping_handler>();
+	this->register_service<elimination_handler>();
 }
 
 server_list& server::get_server_list()
