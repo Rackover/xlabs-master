@@ -42,7 +42,7 @@ void info_response_command::handle_command(const network::address& target, const
 		server.heartbeat = std::chrono::high_resolution_clock::now();
 		server.info_string = std::move(info);
 
-		console::log("Server registered for game %s (%i): %s - %s", game.data(), server.protocol,
+		console::log("Server registered for game %s (%i):\t%s\t- %s", game.data(), server.protocol,
 			address.to_string().data(), server.name.data());
 	});
 
