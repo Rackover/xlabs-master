@@ -20,6 +20,26 @@ namespace console
 		std::mutex signal_mutex;
 		std::function<void()> signal_callback;
 
+#ifdef _WIN32
+#define COLOR(win, posix) win
+		using color_type = WORD;
+#else
+#define COLOR(win, posix) posix
+		using color_type = const char*;
+#endif
+	
+		const color_type color_array[] =
+		{
+			COLOR(8, "\033[1;90;24;27m"),	// 0 - black // FIX
+			COLOR_LOG_ERROR,				// 1 - red
+			COLOR(10, "\033[1;32;24;27m"),	// 2 - green // FIX
+			COLOR_LOG_WARN,					// 3 - yellow
+			COLOR(3, "\033[1;34;24;27m"),	// 4 - blue  // FIX
+			COLOR_LOG_INFO,					// 5 - cyan
+			COLOR(13, "\033[1;35;24;27m"),	// 6 - pink  // FIX
+			COLOR_LOG_DEBUG,				// 7 - white
+		};
+
 		class stdout_lock
 		{
 		public:
@@ -63,7 +83,7 @@ namespace console
 	}
 #endif
 
-		std::string_view format(va_list* ap, const char* message)
+		std::string format(va_list* ap, const char* message)
 		{
 			static thread_local char buffer[0x1000];
 
@@ -84,17 +104,59 @@ namespace console
 		}
 #endif
 
+		void set_color(const color_type color)
+		{
 #ifdef _WIN32
-		void set_color(const WORD color)
-		{
 			SetConsoleTextAttribute(get_console_handle(), color);
-		}
 #else
-		void set_color(const char* color)
-		{
 			printf("%s", color);
-		}
 #endif
+		}
+
+		bool apply_color(const std::string& data, const size_t index, const color_type base_color)
+		{
+			if(data[index] != '^' || (index + 1) >= data.size())
+			{
+				return false;
+			}
+
+			auto code = data[index + 1] - '0';
+			if(code < 0 || code > 11)
+			{
+				return false;
+			}
+			
+			code = std::min(code, 7); // Everything above white is white
+			if(code == 7)
+			{
+				set_color(base_color);
+			}
+			else
+			{
+				set_color(color_array[code]);
+			}
+			
+			return true;
+		}
+
+		void print_colored(const std::string& line, const color_type base_color)
+		{
+			stdout_lock _{};
+			set_color(base_color);
+
+			for(size_t i = 0; i < line.size(); ++i)
+			{
+				if(apply_color(line, i, base_color))
+				{
+					++i;
+					continue;
+				}
+
+				putchar(line[i]);
+			}
+
+			reset_color();
+		}
 	}
 
 	void reset_color()
@@ -111,56 +173,44 @@ namespace console
 
 	void info(const char* message, ...)
 	{
-		stdout_lock _{};
-		
 		va_list ap;
 		va_start(ap, message);
-
-		set_color(COLOR_LOG_INFO);
+		
 		const auto data = format(&ap, message);
-		printf("[+] %.*s\n", static_cast<int>(data.size()), data.data());
+		print_colored("[+] " + data + "\n", COLOR_LOG_INFO);
 
 		va_end(ap);
 	}
 
 	void warn(const char* message, ...)
 	{
-		stdout_lock _{};
-		
 		va_list ap;
 		va_start(ap, message);
-
-		set_color(COLOR_LOG_WARN);
+		
 		const auto data = format(&ap, message);
-		printf("[!] %.*s\n", static_cast<int>(data.size()), data.data());
+		print_colored("[!] " + data + "\n", COLOR_LOG_WARN);
 
 		va_end(ap);
 	}
 
 	void error(const char* message, ...)
 	{
-		stdout_lock _{};
-		
 		va_list ap;
 		va_start(ap, message);
-
-		set_color(COLOR_LOG_ERROR);
+		
 		const auto data = format(&ap, message);
-		printf("[-] %.*s\n", static_cast<int>(data.size()), data.data());
+		print_colored("[-] " + data + "\n", COLOR_LOG_ERROR);
 
 		va_end(ap);
 	}
 
 	void log(const char* message, ...)
 	{
-		stdout_lock _{};
-		
 		va_list ap;
 		va_start(ap, message);
-
-		set_color(COLOR_LOG_DEBUG);
+		
 		const auto data = format(&ap, message);
-		printf("[*] %.*s\n", static_cast<int>(data.size()), data.data());
+		print_colored("[*] " + data + "\n", COLOR_LOG_DEBUG);
 
 		va_end(ap);
 	}

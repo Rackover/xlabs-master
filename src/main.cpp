@@ -25,10 +25,8 @@ namespace
 }
 
 
-int main(int argc, const char** argv)
+int main(const int argc, const char** argv)
 {
-	auto result = 0;
-	
 	console::set_title("X Labs master");
 	console::log("Starting X Labs master server");
 
@@ -39,9 +37,8 @@ int main(int argc, const char** argv)
 	catch(std::exception& e)
 	{
 		console::error("Fatal error: %s\n", e.what());
-		result = -1;
+		return -1;
 	}
 
-	console::reset_color();
-	return result;
+	return 0;
 }
