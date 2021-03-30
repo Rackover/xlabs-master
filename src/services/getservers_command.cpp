@@ -50,5 +50,5 @@ void getservers_command::handle_command(const network::address& target, const st
 
 	this->get_server().send(target, "getserversResponse", response);
 
-	console::log("Sent %d servers for game %s: %s", count, game.data(), target.to_string().data());
+	console::log("Sent %d servers for game %s:\t%s", count, game.data(), target.to_string().data());
 }
