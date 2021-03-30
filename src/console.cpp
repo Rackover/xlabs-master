@@ -30,14 +30,14 @@ namespace console
 	
 		const color_type color_array[] =
 		{
-			COLOR(8, "\033[1;90;24;27m"),	// 0 - black // FIX
-			COLOR_LOG_ERROR,				// 1 - red
-			COLOR(10, "\033[1;32;24;27m"),	// 2 - green // FIX
-			COLOR_LOG_WARN,					// 3 - yellow
-			COLOR(3, "\033[1;34;24;27m"),	// 4 - blue  // FIX
-			COLOR_LOG_INFO,					// 5 - cyan
-			COLOR(13, "\033[1;35;24;27m"),	// 6 - pink  // FIX
-			COLOR_LOG_DEBUG,				// 7 - white
+			COLOR(8, "\033[1;90;24;27m"),				// 0 - black // FIX
+			COLOR(COLOR_LOG_ERROR, "\033[1;91;24;27m"),	// 1 - red
+			COLOR(10, "\033[1;92;24;27m"),				// 2 - green // FIX
+			COLOR(COLOR_LOG_WARN, "\033[1;93;24;27m"),	// 3 - yellow
+			COLOR(3, "\033[1;94;24;27m"),				// 4 - blue  // FIX
+			COLOR(COLOR_LOG_INFO, "\033[1;95;24;27m"),	// 5 - cyan
+			COLOR(13, "\033[1;96;24;27m"),				// 6 - pink  // FIX
+			COLOR(COLOR_LOG_DEBUG, "\033[1;97;24;27m"),	// 7 - white
 		};
 
 		class stdout_lock
