@@ -15,10 +15,15 @@ function libtommath.includes()
 		libtommath.source
 	}
 
+	if os.istarget("windows") then
+		defines {
+			"MP_NO_DEV_URANDOM",
+		}
+	end
+
 	defines {
 		"LTM_DESC",
 		"__STDC_IEC_559__",
-		"MP_NO_DEV_URANDOM",
 	}
 end
 

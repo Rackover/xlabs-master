@@ -41,7 +41,7 @@ configurations {"Debug", "Release"}
 architecture "x64"
 platforms "x64"
 
-filter "toolset:gcc*"
+filter { "language:C++", "toolset:not msc*" }
 	buildoptions {
 		"-std=c++17"
 	}

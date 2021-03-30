@@ -6,12 +6,11 @@ function protobuf.import()
 	links {
 		"protobuf"
 	}
-	
-	if os.istarget("linux") then
+
+	if os.istarget("linux") or os.istarget("darwin") then
 		buildoptions { "-pthread" }
 		linkoptions { "-pthread" }
 	end
-
 
 	protobuf.includes()
 end
@@ -48,7 +47,7 @@ function protobuf.project()
 			removefiles {
 				path.join(protobuf.source, "**/*_gcc.cc"),
 			}
-		filter "toolset:gcc*"
+		filter "toolset:not msc*"
 			defines { "HAVE_PTHREAD" }
 		filter {}
 		
