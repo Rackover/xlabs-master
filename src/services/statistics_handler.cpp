@@ -12,7 +12,7 @@ statistics_handler::statistics_handler(server& server)
 void statistics_handler::run_frame()
 {
 	const auto now = std::chrono::high_resolution_clock::now();
-	if(now - this->last_print < 1min)
+	if(now - this->last_print < 5min)
 	{
 		return;
 	}
@@ -34,7 +34,7 @@ void statistics_handler::run_frame()
 	
 	for(const auto& game_servers : servers)
 	{
-		console::log("%s (%d)", resolve_game_type_name(game_servers.first).data(), static_cast<uint32_t>(game_servers.second.size()));
+		console::log("%s (%d):", resolve_game_type_name(game_servers.first).data(), static_cast<uint32_t>(game_servers.second.size()));
 
 		for(const auto& server : game_servers.second)
 		{
