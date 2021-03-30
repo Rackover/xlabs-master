@@ -12,13 +12,14 @@ statistics_handler::statistics_handler(server& server)
 void statistics_handler::run_frame()
 {
 	const auto now = std::chrono::high_resolution_clock::now();
-	if(now - this->last_print < 5min)
+	if(now - this->last_print < 1min)
 	{
 		return;
 	}
 
 	std::map<game_type, std::vector<std::pair<std::string, network::address>>> servers;
 
+	this->last_print = std::chrono::high_resolution_clock::now();
 	this->get_server().get_server_list().iterate_servers([&servers](const server_list::iteration_context& context)
 	{
 		const auto& server = context.get_server();
@@ -33,7 +34,7 @@ void statistics_handler::run_frame()
 	
 	for(const auto& game_servers : servers)
 	{
-		console::log("%s", resolve_game_type_name(game_servers.first).data());
+		console::log("%s (%d)", resolve_game_type_name(game_servers.first).data(), static_cast<uint32_t>(game_servers.second.size()));
 
 		for(const auto& server : game_servers.second)
 		{

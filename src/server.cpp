@@ -8,6 +8,7 @@
 #include "services/info_response_command.hpp"
 #include "services/ping_handler.hpp"
 #include "services/elimination_handler.hpp"
+#include "services/statistics_handler.hpp"
 
 server::server(const network::address& bind_addr)
 	: server_base(bind_addr)
@@ -17,6 +18,7 @@ server::server(const network::address& bind_addr)
 	this->register_service<info_response_command>();
 	this->register_service<ping_handler>();
 	this->register_service<elimination_handler>();
+	this->register_service<statistics_handler>();
 }
 
 server_list& server::get_server_list()
