@@ -24,6 +24,11 @@ void info_response_command::handle_command(const network::address& target, const
 			throw execution_exception{"Invalid game type: " + game};
 		}
 
+		if(server.state != game_server::state::pinged)
+		{
+			throw execution_exception{"Stray info response"};	
+		}
+
 		if(challenge != server.challenge)
 		{
 			throw execution_exception{"Invalid challenge"};

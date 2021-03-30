@@ -2,6 +2,18 @@
 
 namespace console
 {
+	class lock
+	{
+	public:
+		lock();
+		~lock();
+
+		lock(lock&&) = delete;
+		lock(const lock&) = delete;
+		lock& operator=(lock&&) = delete;
+		lock& operator=(const lock&) = delete;
+	};
+
 	void reset_color();
 
 	void info(const char* message, ...);

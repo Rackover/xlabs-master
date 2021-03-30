@@ -10,6 +10,20 @@ enum class game_type
 	s1,
 };
 
+
+inline const std::string& resolve_game_type_name(const game_type game)
+{
+	static const std::unordered_map<game_type, std::string> names =
+	{
+		{game_type::unknown, "Unknown"},
+		{game_type::iw4, "IW4"},
+		{game_type::iw6, "IW6"},
+		{game_type::s1, "S1"},
+	};
+
+	return names.at(game);
+}
+
 inline game_type resolve_game_type(const std::string& game_name)
 {
 	if(game_name == "IW4")

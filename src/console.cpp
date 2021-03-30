@@ -40,28 +40,6 @@ namespace console
 			COLOR(0xF, "\033[1;97;24;27m"),	// 7 - white
 		};
 
-		class stdout_lock
-		{
-		public:
-			stdout_lock()
-			{
-#ifdef _WIN32
-				_lock_file(stdout);
-#else
-				flockfile(stdout);
-#endif
-			}
-
-			~stdout_lock()
-			{
-#ifdef _WIN32
-				_unlock_file(stdout);
-#else
-				funlockfile(stdout);
-#endif
-			}
-		};
-
 #ifdef _WIN32
 		BOOL WINAPI handler(const DWORD signal)
 		{
@@ -141,7 +119,7 @@ namespace console
 
 		void print_colored(const std::string& line, const color_type base_color)
 		{
-			stdout_lock _{};
+			lock _{};
 			set_color(base_color);
 
 			for(size_t i = 0; i < line.size(); ++i)
@@ -159,9 +137,27 @@ namespace console
 		}
 	}
 
+	lock::lock()
+	{
+#ifdef _WIN32
+		_lock_file(stdout);
+#else
+		flockfile(stdout);
+#endif
+	}
+
+	lock::~lock()
+	{
+#ifdef _WIN32
+		_unlock_file(stdout);
+#else
+		funlockfile(stdout);
+#endif
+	}
+
 	void reset_color()
 	{
-		stdout_lock _{};
+		lock _{};
 #ifdef _WIN32
 		SetConsoleTextAttribute(get_console_handle(), 7);
 #else
@@ -217,7 +213,7 @@ namespace console
 
 	void set_title(const std::string& title)
 	{
-		stdout_lock _{};
+		lock _{};
 		
 #ifdef _WIN32
 		SetConsoleTitleA(title.data());
@@ -246,7 +242,6 @@ namespace console
 #else
 		signal(SIGINT, SIG_DFL);
 #endif
-
 
 		signal_callback = {};
 	}
