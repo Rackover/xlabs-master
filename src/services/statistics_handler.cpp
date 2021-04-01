@@ -20,9 +20,9 @@ void statistics_handler::run_frame()
 	std::map<game_type, std::vector<std::pair<std::string, network::address>>> servers;
 
 	this->last_print = std::chrono::high_resolution_clock::now();
-	this->get_server().get_server_list().iterate_servers([&servers](const server_list::iteration_context& context)
+	this->get_server().get_server_list().iterate([&servers](const server_list::iteration_context& context)
 	{
-		const auto& server = context.get_server();
+		const auto& server = context.get();
 		if(server.registered)
 		{
 			servers[server.game].emplace_back(server.name, context.get_address());

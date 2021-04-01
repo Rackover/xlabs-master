@@ -10,7 +10,7 @@ const char* info_response_command::get_command() const
 
 void info_response_command::handle_command(const network::address& target, const std::string_view& data)
 {
-	const auto found = this->get_server().get_server_list().find_server(target, [&data](game_server& server, const network::address& address)
+	const auto found = this->get_server().get_server_list().find(target, [&data](game_server& server, const network::address& address)
 	{
 		utils::info_string info(data);
 		const auto game = info.get("gamename");
