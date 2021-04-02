@@ -34,7 +34,11 @@ namespace crypto_key
 				throw std::runtime_error("Failed to generate server key!");
 			}
 
-			utils::io::write_file("./private.key", key.serialize());
+			if(!utils::io::write_file("./private.key", key.serialize()))
+			{
+				throw std::runtime_error("Failed to write server key!");
+			}
+			
 			console::info("Generated cryptographic key: %llX", key.get_hash());
 			return key;
 		}
@@ -54,7 +58,10 @@ namespace crypto_key
 		utils::cryptography::ecc::key get_key_internal()
 		{
 			auto key = load_or_generate_key();
-			utils::io::write_file("./public.key", key.get_public_key());
+			if(!utils::io::write_file("./public.key", key.get_public_key()))
+			{
+				console::error("Failed to write public key!");
+			}
 			return key;
 		}
 	}
