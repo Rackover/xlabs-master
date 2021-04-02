@@ -24,6 +24,7 @@ namespace utils::cryptography
 
 	ecc::key::key()
 	{
+		initialize_math();
 		ZeroMemory(&this->key_storage_, sizeof(this->key_storage_));
 	}
 

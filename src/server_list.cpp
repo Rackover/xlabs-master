@@ -10,8 +10,6 @@ void server_list::find_registered_servers(const game_type game, const int protoc
 		{
 			accessor(server, context.get_address());	
 		}
-
-		return false;
 	});
 }
 

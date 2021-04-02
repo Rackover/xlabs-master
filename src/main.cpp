@@ -2,11 +2,14 @@
 
 #include "console.hpp"
 #include "server.hpp"
+#include "crypto_key.hpp"
 
 namespace
 {
 	void unsafe_main(const uint16_t port)
 	{
+		crypto_key::get();
+		
 		console::log("Creating socket on port %hu", port);
 		
 		network::address a{"0.0.0.0"};
