@@ -33,17 +33,17 @@ const server_list& server::get_server_list() const
 
 void server::run_frame()
 {
-	for(auto& service : services_)
+	for (auto& service : services_)
 	{
 		try
 		{
 			service->run_frame();
 		}
-		catch(const service::execution_exception& e)
+		catch (const service::execution_exception& e)
 		{
 			console::warn("Execption in service: %s", e.what());
 		}
-		catch(const std::exception& e)
+		catch (const std::exception& e)
 		{
 			console::error("Fatal execption in service: %s", e.what());
 		}
@@ -62,19 +62,21 @@ void server::handle_command(const network::address& target, const std::string_vi
 
 #ifdef DEBUG
 	console::log("Handling command (%s): %.*s - %.*s", target.to_string().data(), command.size(), command.data(),
-		data.size(), data.data());
+	             data.size(), data.data());
 #endif
 
 	try
 	{
 		handler->second->handle_command(target, data);
 	}
-	catch(const service::execution_exception& e)
+	catch (const service::execution_exception& e)
 	{
-		console::warn("Execption in command %.*s (%s): %s", command.size(), command.data(), target.to_string().data(), e.what());
+		console::warn("Execption in command %.*s (%s): %s", command.size(), command.data(), target.to_string().data(),
+		              e.what());
 	}
-	catch(const std::exception& e)
+	catch (const std::exception& e)
 	{
-		console::error("Fatal execption in command %.*s (%s): %s", command.size(), command.data(), target.to_string().data(), e.what());
+		console::error("Fatal execption in command %.*s (%s): %s", command.size(), command.data(),
+		               target.to_string().data(), e.what());
 	}
 }

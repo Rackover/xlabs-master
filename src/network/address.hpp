@@ -16,12 +16,13 @@ namespace network
 		sockaddr& get_addr();
 		const sockaddr& get_addr() const;
 		sockaddr_in& get_in_addr();
-		const sockaddr_in& get_in_addr()const ;
+		const sockaddr_in& get_in_addr() const;
 
 		[[nodiscard]] bool is_local() const;
 		[[nodiscard]] std::string to_string() const;
 
 		bool operator==(const address& obj) const;
+
 		bool operator!=(const address& obj) const
 		{
 			return !(*this == obj);
@@ -37,8 +38,9 @@ namespace network
 
 namespace std
 {
-    template<> struct hash<network::address>
-    {
-        std::size_t operator()(const network::address& a) const noexcept;
-    };
+	template <>
+	struct hash<network::address>
+	{
+		std::size_t operator()(const network::address& a) const noexcept;
+	};
 }

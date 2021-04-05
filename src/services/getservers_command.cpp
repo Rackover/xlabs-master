@@ -12,7 +12,7 @@ const char* getservers_command::get_command() const
 void getservers_command::handle_command(const network::address& target, const std::string_view& data)
 {
 	const utils::parameters params(data);
-	if(params.size() < 2)
+	if (params.size() < 2)
 	{
 		throw execution_exception{"Invalid parameter count"};
 	}
@@ -21,7 +21,7 @@ void getservers_command::handle_command(const network::address& target, const st
 	const auto protocol = atoi(params[1].data());
 
 	const auto game_type = resolve_game_type(game);
-	if(game_type == game_type::unknown)
+	if (game_type == game_type::unknown)
 	{
 		throw execution_exception{"Invalid game type: " + game};
 	}
@@ -29,18 +29,22 @@ void getservers_command::handle_command(const network::address& target, const st
 	auto count = 0;
 	std::string response{};
 
-	this->get_server().get_server_list().find_registered_servers(game_type, protocol, [&response, &count](const game_server&,
-		const network::address& address)
-	{
-		const auto addr = address.get_in_addr().sin_addr.s_addr;
-		const auto port = htons(address.get_port());
+	this->get_server().get_server_list().find_registered_servers(game_type, protocol, [&response, &count](
+	                                                             const game_server&,
+	                                                             const network::address& address)
+	                                                             {
+		                                                             const auto addr = address.get_in_addr().sin_addr.
+			                                                             s_addr;
+		                                                             const auto port = htons(address.get_port());
 
-		response.push_back('\\');
-		response.append(reinterpret_cast<const char*>(&addr), 4);
-		response.append(reinterpret_cast<const char*>(&port), 2);
+		                                                             response.push_back('\\');
+		                                                             response.append(
+			                                                             reinterpret_cast<const char*>(&addr), 4);
+		                                                             response.append(
+			                                                             reinterpret_cast<const char*>(&port), 2);
 
-		++count;
-	});
+		                                                             ++count;
+	                                                             });
 
 	response.push_back('\\');
 	response.append("EOT");

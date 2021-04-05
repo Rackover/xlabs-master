@@ -9,7 +9,7 @@ namespace utils
 	{
 	public:
 		using list_type = std::vector<std::string>;
-		
+
 		parameters() = default;
 		parameters(std::string buffer);
 		parameters(const std::string_view& buffer);

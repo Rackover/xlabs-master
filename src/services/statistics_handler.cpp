@@ -4,15 +4,14 @@
 
 statistics_handler::statistics_handler(server& server)
 	: service(server)
-	, last_print(std::chrono::high_resolution_clock::now())
+	  , last_print(std::chrono::high_resolution_clock::now())
 {
-
 }
 
 void statistics_handler::run_frame()
 {
 	const auto now = std::chrono::high_resolution_clock::now();
-	if(now - this->last_print < 5min)
+	if (now - this->last_print < 5min)
 	{
 		return;
 	}
@@ -23,7 +22,7 @@ void statistics_handler::run_frame()
 	this->get_server().get_server_list().iterate([&servers](const server_list::iteration_context& context)
 	{
 		const auto& server = context.get();
-		if(server.registered)
+		if (server.registered)
 		{
 			servers[server.game].emplace_back(server.name, context.get_address());
 		}
@@ -31,12 +30,13 @@ void statistics_handler::run_frame()
 
 	console::lock _{};
 	console::log("");
-	
-	for(const auto& game_servers : servers)
-	{
-		console::log("%s (%d):", resolve_game_type_name(game_servers.first).data(), static_cast<uint32_t>(game_servers.second.size()));
 
-		for(const auto& server : game_servers.second)
+	for (const auto& game_servers : servers)
+	{
+		console::log("%s (%d):", resolve_game_type_name(game_servers.first).data(),
+		             static_cast<uint32_t>(game_servers.second.size()));
+
+		for (const auto& server : game_servers.second)
 		{
 			console::log("\t%s\t%s", server.second.to_string().data(), server.first.data());
 		}

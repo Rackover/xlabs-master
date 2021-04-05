@@ -34,7 +34,7 @@ namespace network
 #define INVALID_SOCKET  (SOCKET)(~0)
 #define SOCKET_ERROR            (-1)
 #endif
-		
+
 		SOCKET socket_ = INVALID_SOCKET;
 	};
 }

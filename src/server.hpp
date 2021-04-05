@@ -14,7 +14,7 @@ public:
 
 private:
 	server_list server_list_;
-	
+
 	std::vector<std::unique_ptr<service>> services_;
 	std::unordered_map<std::string, service*> command_services_;
 
@@ -32,5 +32,6 @@ private:
 	}
 
 	void run_frame() override;
-	void handle_command(const network::address& target, const std::string_view& command, const std::string_view& data) override;
+	void handle_command(const network::address& target, const std::string_view& command,
+	                    const std::string_view& data) override;
 };

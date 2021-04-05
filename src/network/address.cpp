@@ -24,8 +24,8 @@ namespace network
 	{
 		//return !std::memcmp(&this->address_, &obj.address_, sizeof(this->address_));
 		return this->address_.sin_family == obj.address_.sin_family //
-		&& this->address_.sin_addr.s_addr == obj.address_.sin_addr.s_addr //
-		&& this->address_.sin_port == obj.address_.sin_port;
+			&& this->address_.sin_addr.s_addr == obj.address_.sin_addr.s_addr //
+			&& this->address_.sin_port == obj.address_.sin_port;
 	}
 
 	void address::set_ipv4(const in_addr addr)
@@ -55,7 +55,7 @@ namespace network
 	bool address::is_local() const
 	{
 		// According to: https://en.wikipedia.org/wiki/Private_network
-		
+
 		uint8_t bytes[4];
 		*reinterpret_cast<uint32_t*>(&bytes) = this->address_.sin_addr.s_addr;
 
@@ -147,8 +147,8 @@ namespace network
 
 std::size_t std::hash<network::address>::operator()(const network::address& a) const noexcept
 {
-    const auto h1 = std::hash<decltype(a.get_in_addr().sin_family)>{}(a.get_in_addr().sin_family);
-    const auto h2 = std::hash<decltype(a.get_in_addr().sin_addr.s_addr)>{}(a.get_in_addr().sin_addr.s_addr);
-    const auto h3 = std::hash<decltype(a.get_in_addr().sin_port)>{}(a.get_in_addr().sin_port);
-    return h1 ^ (h2 << 1) ^ (h3 << 2);
+	const auto h1 = std::hash<decltype(a.get_in_addr().sin_family)>{}(a.get_in_addr().sin_family);
+	const auto h2 = std::hash<decltype(a.get_in_addr().sin_addr.s_addr)>{}(a.get_in_addr().sin_addr.s_addr);
+	const auto h3 = std::hash<decltype(a.get_in_addr().sin_port)>{}(a.get_in_addr().sin_port);
+	return h1 ^ (h2 << 1) ^ (h3 << 2);
 }

@@ -7,11 +7,11 @@ namespace utils
 {
 	parameters::parameters(std::string buffer)
 	{
-		while(!buffer.empty() && (buffer.back() == '\0' || isspace(buffer.back())))
+		while (!buffer.empty() && (buffer.back() == '\0' || isspace(buffer.back())))
 		{
 			buffer.pop_back();
 		}
-		
+
 		this->arguments_ = string::split(buffer, ' ');
 	}
 
@@ -39,7 +39,7 @@ namespace utils
 	{
 		std::string buffer{};
 
-		for(auto i = index; i < this->size(); ++i)
+		for (auto i = index; i < this->size(); ++i)
 		{
 			if (i != 0)
 			{
@@ -79,14 +79,14 @@ namespace utils
 
 	bool parameters::has(const std::string& value) const
 	{
-		for(const auto& val : this->arguments_)
+		for (const auto& val : this->arguments_)
 		{
-			if(val == value)
+			if (val == value)
 			{
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 }

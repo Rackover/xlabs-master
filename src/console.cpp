@@ -27,17 +27,17 @@ namespace console
 #define COLOR(win, posix) posix
 		using color_type = const char*;
 #endif
-	
+
 		const color_type color_array[] =
 		{
-			COLOR(0x8, "\033[1;90;24;27m"),	// 0 - black
-			COLOR(0xC, "\033[1;91;24;27m"),	// 1 - red
-			COLOR(0xA, "\033[1;92;24;27m"),	// 2 - green
-			COLOR(0xE, "\033[1;93;24;27m"),	// 3 - yellow
-			COLOR(0x9, "\033[1;94;24;27m"),	// 4 - blue
-			COLOR(0xB, "\033[1;95;24;27m"),	// 5 - cyan
-			COLOR(0xD, "\033[1;96;24;27m"),	// 6 - pink
-			COLOR(0xF, "\033[1;97;24;27m"),	// 7 - white
+			COLOR(0x8, "\033[1;90;24;27m"), // 0 - black
+			COLOR(0xC, "\033[1;91;24;27m"), // 1 - red
+			COLOR(0xA, "\033[1;92;24;27m"), // 2 - green
+			COLOR(0xE, "\033[1;93;24;27m"), // 3 - yellow
+			COLOR(0x9, "\033[1;94;24;27m"), // 4 - blue
+			COLOR(0xB, "\033[1;95;24;27m"), // 5 - cyan
+			COLOR(0xD, "\033[1;96;24;27m"), // 6 - pink
+			COLOR(0xF, "\033[1;97;24;27m"), // 7 - white
 		};
 
 #ifdef _WIN32
@@ -71,7 +71,7 @@ namespace console
 			const int count = vsnprintf(buffer, sizeof(buffer), message, *ap);
 #endif
 
-			if(count < 0) return {};
+			if (count < 0) return {};
 			return {buffer, static_cast<size_t>(count)};
 		}
 
@@ -93,19 +93,19 @@ namespace console
 
 		bool apply_color(const std::string& data, const size_t index, const color_type base_color)
 		{
-			if(data[index] != '^' || (index + 1) >= data.size())
+			if (data[index] != '^' || (index + 1) >= data.size())
 			{
 				return false;
 			}
 
 			auto code = data[index + 1] - '0';
-			if(code < 0 || code > 11)
+			if (code < 0 || code > 11)
 			{
 				return false;
 			}
-			
+
 			code = std::min(code, 7); // Everything above white is white
-			if(code == 7)
+			if (code == 7)
 			{
 				set_color(base_color);
 			}
@@ -113,7 +113,7 @@ namespace console
 			{
 				set_color(color_array[code]);
 			}
-			
+
 			return true;
 		}
 
@@ -122,9 +122,9 @@ namespace console
 			lock _{};
 			set_color(base_color);
 
-			for(size_t i = 0; i < line.size(); ++i)
+			for (size_t i = 0; i < line.size(); ++i)
 			{
-				if(apply_color(line, i, base_color))
+				if (apply_color(line, i, base_color))
 				{
 					++i;
 					continue;
@@ -171,7 +171,7 @@ namespace console
 	{
 		va_list ap;
 		va_start(ap, message);
-		
+
 		const auto data = format(&ap, message);
 		print_colored("[+] " + data + "\n", COLOR_LOG_INFO);
 
@@ -182,7 +182,7 @@ namespace console
 	{
 		va_list ap;
 		va_start(ap, message);
-		
+
 		const auto data = format(&ap, message);
 		print_colored("[!] " + data + "\n", COLOR_LOG_WARN);
 
@@ -193,7 +193,7 @@ namespace console
 	{
 		va_list ap;
 		va_start(ap, message);
-		
+
 		const auto data = format(&ap, message);
 		print_colored("[-] " + data + "\n", COLOR_LOG_ERROR);
 
@@ -204,7 +204,7 @@ namespace console
 	{
 		va_list ap;
 		va_start(ap, message);
-		
+
 		const auto data = format(&ap, message);
 		print_colored("[*] " + data + "\n", COLOR_LOG_DEBUG);
 
@@ -214,7 +214,7 @@ namespace console
 	void set_title(const std::string& title)
 	{
 		lock _{};
-		
+
 #ifdef _WIN32
 		SetConsoleTitleA(title.data());
 #else

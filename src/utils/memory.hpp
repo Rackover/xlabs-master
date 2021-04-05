@@ -62,7 +62,7 @@ namespace utils
 		static void free(const void* data);
 
 		static bool is_set(const void* mem, char chr, size_t length);
-		
+
 		static allocator* get_allocator();
 
 	private:

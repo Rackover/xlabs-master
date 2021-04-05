@@ -4,7 +4,7 @@
 bool client_list::find_client(uint64_t guid, const access_func& accessor)
 {
 	auto found = false;
-	
+
 	this->iterate([&](iteration_context& context)
 	{
 		auto& client = context.get();
@@ -22,7 +22,7 @@ bool client_list::find_client(uint64_t guid, const access_func& accessor)
 bool client_list::find_client(uint64_t guid, const const_access_func& accessor) const
 {
 	auto found = false;
-	
+
 	this->iterate([&](const iteration_context& context)
 	{
 		const auto& client = context.get();

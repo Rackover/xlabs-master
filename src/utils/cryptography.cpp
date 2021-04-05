@@ -13,7 +13,7 @@ namespace utils::cryptography
 	{
 		void initialize_math()
 		{
-			static bool initialized = false;
+			static auto initialized = false;
 			if (!initialized)
 			{
 				initialized = true;
@@ -93,7 +93,8 @@ namespace utils::cryptography
 	{
 		this->free();
 
-		if (ecc_ansi_x963_import(reinterpret_cast<const uint8_t*>(pub_key_buffer.data()), static_cast<unsigned long>(pub_key_buffer.size()),
+		if (ecc_ansi_x963_import(reinterpret_cast<const uint8_t*>(pub_key_buffer.data()),
+		                         static_cast<unsigned long>(pub_key_buffer.size()),
 		                         &this->key_storage_) != CRYPT_OK)
 		{
 			ZeroMemory(&this->key_storage_, sizeof(this->key_storage_));
@@ -104,7 +105,8 @@ namespace utils::cryptography
 	{
 		this->free();
 
-		if (ecc_import(reinterpret_cast<const uint8_t*>(key.data()), static_cast<unsigned long>(key.size()), &this->key_storage_) != CRYPT_OK
+		if (ecc_import(reinterpret_cast<const uint8_t*>(key.data()), static_cast<unsigned long>(key.size()),
+		               &this->key_storage_) != CRYPT_OK
 		)
 		{
 			ZeroMemory(&this->key_storage_, sizeof(this->key_storage_));
@@ -190,7 +192,8 @@ namespace utils::cryptography
 
 		initialize_math();
 		register_prng(&sprng_desc);
-		ecc_sign_hash(reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()), buffer, &length, nullptr,
+		ecc_sign_hash(reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()),
+		              buffer, &length, nullptr,
 		              find_prng("sprng"), key.get());
 
 		return std::string(reinterpret_cast<char*>(buffer), length);
@@ -203,8 +206,10 @@ namespace utils::cryptography
 		initialize_math();
 
 		auto result = 0;
-		return (ecc_verify_hash(reinterpret_cast<const uint8_t*>(signature.data()), static_cast<unsigned long>(signature.size()),
-		                        reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()), &result,
+		return (ecc_verify_hash(reinterpret_cast<const uint8_t*>(signature.data()),
+		                        static_cast<unsigned long>(signature.size()),
+		                        reinterpret_cast<const uint8_t*>(message.data()),
+		                        static_cast<unsigned long>(message.size()), &result,
 		                        key.get()) == CRYPT_OK && result != 0);
 	}
 
@@ -310,7 +315,8 @@ namespace utils::cryptography
 		cbc_start(des3, reinterpret_cast<const uint8_t*>(iv.data()), reinterpret_cast<const uint8_t*>(key.data()),
 		          static_cast<int>(key.size()), 0, &cbc);
 		cbc_decrypt(reinterpret_cast<const uint8_t*>(data.data()),
-		            reinterpret_cast<uint8_t*>(const_cast<char*>(dec_data.data())), static_cast<unsigned long>(data.size()), &cbc);
+		            reinterpret_cast<uint8_t*>(const_cast<char*>(dec_data.data())),
+		            static_cast<unsigned long>(data.size()), &cbc);
 		cbc_done(&cbc);
 
 		return dec_data;

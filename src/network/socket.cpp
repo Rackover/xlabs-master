@@ -107,7 +107,7 @@ namespace network
 		FD_SET(this->socket_, &fdr);
 
 		const auto msec = timeout.count();
-		
+
 		timeval tv{};
 		tv.tv_sec = static_cast<long>(msec / 1000ll);
 		tv.tv_usec = static_cast<long>((msec % 1000) * 1000);

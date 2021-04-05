@@ -30,11 +30,11 @@ namespace utils::io
 		}
 
 		auto mode = std::ios::binary | std::ofstream::out;
-		if(append)
+		if (append)
 		{
 			mode |= std::ofstream::app;
 		}
-		
+
 		std::ofstream stream(file, mode);
 
 		if (stream.is_open())

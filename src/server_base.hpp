@@ -12,11 +12,13 @@ public:
 	void run();
 	void stop();
 
-	void send(const network::address& target, const std::string& command, const std::string& data, const std::string& separator = " ") const;
+	void send(const network::address& target, const std::string& command, const std::string& data,
+	          const std::string& separator = " ") const;
 
 protected:
 	virtual void run_frame() = 0;
-	virtual void handle_command(const network::address& target, const std::string_view& command, const std::string_view& data) = 0;
+	virtual void handle_command(const network::address& target, const std::string_view& command,
+	                            const std::string_view& data) = 0;
 
 private:
 	network::socket socket_{};
