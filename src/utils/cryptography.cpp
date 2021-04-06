@@ -322,11 +322,11 @@ namespace utils::cryptography
 			res = crypt();
 		}
 
-		if(res != CRYPT_OK)
+		if (res != CRYPT_OK)
 		{
 			return false;
 		}
-		
+
 		out_data.resize(out_len);
 		data = std::move(out_data);
 		return true;
@@ -351,11 +351,11 @@ namespace utils::cryptography
 			res = crypt();
 		}
 
-		if(res != CRYPT_OK)
+		if (res != CRYPT_OK)
 		{
 			return false;
 		}
-		
+
 		out_data.resize(out_len);
 		data = std::move(out_data);
 		return true;
