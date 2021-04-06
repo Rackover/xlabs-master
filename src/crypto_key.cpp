@@ -28,8 +28,8 @@ namespace crypto_key
 
 		utils::cryptography::ecc::key generate_key()
 		{
-			auto key = utils::cryptography::ecc::generate_key(32 * 8);
-			if (!key.is_valid())
+			auto key = utils::cryptography::ecc::generate_key(512);
+			if(!key.is_valid())
 			{
 				throw std::runtime_error("Failed to generate server key!");
 			}

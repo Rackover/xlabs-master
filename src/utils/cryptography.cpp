@@ -71,9 +71,14 @@ namespace utils::cryptography
 		return (!memory::is_set(&this->key_storage_, 0, sizeof(this->key_storage_)));
 	}
 
-	ecc_key* ecc::key::get()
+	ecc_key& ecc::key::get()
 	{
-		return &this->key_storage_;
+		return this->key_storage_;
+	}
+
+	const ecc_key& ecc::key::get() const
+	{
+		return this->key_storage_;
 	}
 
 	std::string ecc::key::get_public_key() const
@@ -158,7 +163,7 @@ namespace utils::cryptography
 
 		initialize_math();
 		register_prng(&sprng_desc);
-		ecc_make_key(nullptr, find_prng("sprng"), bits / 8, key.get());
+		ecc_make_key(nullptr, find_prng("sprng"), bits / 8, &key.get());
 
 		return key;
 	}
@@ -177,13 +182,13 @@ namespace utils::cryptography
 		                   state.get());
 		yarrow_ready(state.get());
 
-		ecc_make_key(state.get(), find_prng("yarrow"), bits / 8, key.get());
+		ecc_make_key(state.get(), find_prng("yarrow"), bits / 8, &key.get());
 		yarrow_done(state.get());
 
 		return key;
 	}
 
-	std::string ecc::sign_message(key& key, const std::string& message)
+	std::string ecc::sign_message(const key& key, const std::string& message)
 	{
 		if (!key.is_valid()) return "";
 
@@ -192,25 +197,27 @@ namespace utils::cryptography
 
 		initialize_math();
 		register_prng(&sprng_desc);
-		ecc_sign_hash(reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()),
-		              buffer, &length, nullptr,
-		              find_prng("sprng"), key.get());
+		ecc_sign_hash(reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()), buffer, &length, nullptr,
+		              find_prng("sprng"), &key.get());
 
 		return std::string(reinterpret_cast<char*>(buffer), length);
 	}
 
-	bool ecc::verify_message(key& key, const std::string& message, const std::string& signature)
+	bool ecc::verify_message(const key& key, const std::string& message, const std::string& signature)
 	{
 		if (!key.is_valid()) return false;
 
 		initialize_math();
 
 		auto result = 0;
-		return (ecc_verify_hash(reinterpret_cast<const uint8_t*>(signature.data()),
-		                        static_cast<unsigned long>(signature.size()),
-		                        reinterpret_cast<const uint8_t*>(message.data()),
-		                        static_cast<unsigned long>(message.size()), &result,
-		                        key.get()) == CRYPT_OK && result != 0);
+		return (ecc_verify_hash(reinterpret_cast<const uint8_t*>(signature.data()), static_cast<unsigned long>(signature.size()),
+		                        reinterpret_cast<const uint8_t*>(message.data()), static_cast<unsigned long>(message.size()), &result,
+		                        &key.get()) == CRYPT_OK && result != 0);
+	}
+
+	bool ecc::encrypt(const key& key, std::string& data)
+	{
+		ecc_encrypt_key()
 	}
 
 	namespace rsa
