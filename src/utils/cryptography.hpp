@@ -45,7 +45,7 @@ namespace utils::cryptography
 		key generate_key(int bits, const std::string& entropy);
 		std::string sign_message(const key& key, const std::string& message);
 		bool verify_message(const key& key, const std::string& message, const std::string& signature);
-	
+
 		bool encrypt(const key& key, std::string& data);
 		bool decrypt(const key& key, std::string& data);
 	}
@@ -75,7 +75,7 @@ namespace utils::cryptography
 
 	namespace hmac_sha1
 	{
-		std::string process(const std::string& data, const std::string& key, unsigned int* len);
+		std::string compute(const std::string& data, const std::string& key);
 	}
 
 	namespace sha1
