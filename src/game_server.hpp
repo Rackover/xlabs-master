@@ -10,7 +10,6 @@ enum class game_type
 	s1,
 };
 
-
 inline const std::string& resolve_game_type_name(const game_type game)
 {
 	static const std::unordered_map<game_type, std::string> names =

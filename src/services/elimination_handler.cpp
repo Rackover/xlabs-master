@@ -15,4 +15,16 @@ void elimination_handler::run_frame()
 			context.remove();
 		}
 	});
+
+	now = std::chrono::high_resolution_clock::now();
+	this->get_server().get_client_list().iterate([&](client_list::iteration_context& context)
+	{
+		auto& client = context.get();
+		const auto diff = now - client.heartbeat;
+
+		if (diff > 5min || (!client.registered && diff > 20s))
+		{
+			context.remove();
+		}
+	});
 }

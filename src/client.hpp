@@ -1,29 +1,23 @@
 #pragma once
 
 #include "utils/cryptography.hpp"
-
-enum class client_role
-{
-	user = 0,
-	patron,
-	staff,
-	admin
-};
-
-enum class authentication_state
-{
-	unauthenticated = 0,
-	key_received,
-	challenge_sent,
-	authenticated,
-};
+#include "game_server.hpp"
 
 struct client
 {
+	enum class state
+	{
+		can_authenticate = 0,
+		key_received,
+		challenge_sent,
+	};
+	
 	uint64_t guid{0};
-	authentication_state state{authentication_state::unauthenticated};
-	client_role role{client_role::user};
+	bool registered{false};
+	game_type game{game_type::unknown};
+	state state{state::can_authenticate};
 	utils::cryptography::ecc::key key{};
 	std::string challenge{};
+	std::string aes_key{};
 	std::chrono::high_resolution_clock::time_point heartbeat{};
 };

@@ -23,12 +23,22 @@ server::server(const network::address& bind_addr)
 
 server_list& server::get_server_list()
 {
-	return server_list_;
+	return this->server_list_;
 }
 
 const server_list& server::get_server_list() const
 {
-	return server_list_;
+	return this->server_list_;
+}
+
+client_list& server::get_client_list()
+{
+	return this->client_list_;
+}
+
+const client_list& server::get_client_list() const
+{
+	return this->client_list_;
 }
 
 void server::run_frame()

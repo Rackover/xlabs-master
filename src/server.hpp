@@ -2,6 +2,7 @@
 
 #include "server_base.hpp"
 #include "server_list.hpp"
+#include "client_list.hpp"
 #include "service.hpp"
 
 class server : public server_base
@@ -12,8 +13,12 @@ public:
 	server_list& get_server_list();
 	const server_list& get_server_list() const;
 
+	client_list& get_client_list();
+	const client_list& get_client_list() const;
+
 private:
 	server_list server_list_;
+	client_list client_list_;
 
 	std::vector<std::unique_ptr<service>> services_;
 	std::unordered_map<std::string, service*> command_services_;
