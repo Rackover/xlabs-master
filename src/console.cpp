@@ -105,11 +105,11 @@ namespace console
 			}
 
 			code = std::min(code, 7); // Everything above white is white
-			if (code == 7)
+			/*if (code == 7)
 			{
 				set_color(base_color);
 			}
-			else
+			else*/
 			{
 				set_color(color_array[code]);
 			}
