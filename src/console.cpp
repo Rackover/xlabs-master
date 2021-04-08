@@ -7,10 +7,10 @@
 #define COLOR_LOG_ERROR 12
 #define COLOR_LOG_DEBUG 15//7
 #else
-#define COLOR_LOG_INFO "\033[1;36;24;27m"//"\033[1;37;24;27m"
-#define COLOR_LOG_WARN "\033[1;33;24;27m"
-#define COLOR_LOG_ERROR "\033[1;31;24;27m"
-#define COLOR_LOG_DEBUG "\033[0m\033[1m"
+#define COLOR_LOG_INFO "\033[0;36m"
+#define COLOR_LOG_WARN "\033[0;33m"
+#define COLOR_LOG_ERROR "\033[0;31m"
+#define COLOR_LOG_DEBUG "\033[0m"
 #endif
 
 namespace console
@@ -30,14 +30,14 @@ namespace console
 
 		const color_type color_array[] =
 		{
-			COLOR(0x8, "\033[1;90;24;27m"), // 0 - black
-			COLOR(0xC, "\033[1;91;24;27m"), // 1 - red
-			COLOR(0xA, "\033[1;92;24;27m"), // 2 - green
-			COLOR(0xE, "\033[1;93;24;27m"), // 3 - yellow
-			COLOR(0x9, "\033[1;94;24;27m"), // 4 - blue
-			COLOR(0xB, "\033[1;95;24;27m"), // 5 - cyan
-			COLOR(0xD, "\033[1;96;24;27m"), // 6 - pink
-			COLOR(0xF, "\033[1;97;24;27m"), // 7 - white
+			COLOR(0x8, "\033[0;90m"), // 0 - black
+			COLOR(0xC, "\033[0;91m"), // 1 - red
+			COLOR(0xA, "\033[0;92m"), // 2 - green
+			COLOR(0xE, "\033[0;93m"), // 3 - yellow
+			COLOR(0x9, "\033[0;94m"), // 4 - blue
+			COLOR(0xB, "\033[0;96m"), // 5 - cyan
+			COLOR(0xD, "\033[0;95m"), // 6 - pink
+			COLOR(0xF, "\033[0;97m"), // 7 - white
 		};
 
 #ifdef _WIN32
