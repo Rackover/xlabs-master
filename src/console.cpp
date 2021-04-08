@@ -91,7 +91,7 @@ namespace console
 #endif
 		}
 
-		bool apply_color(const std::string& data, const size_t index, const color_type base_color)
+		bool apply_color(const std::string& data, const size_t index, const color_type /*base_color*/)
 		{
 			if (data[index] != '^' || (index + 1) >= data.size())
 			{
