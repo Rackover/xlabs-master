@@ -17,7 +17,7 @@ void getbots_command::handle_command(const network::address& target, const std::
 		"Jimbo",
 		"RektInator",
 		"FragsAreUs",
-		"Evan"
+		"Evan",
 		"H3X1C",
 		"FryTechTip",
 		"homura",
