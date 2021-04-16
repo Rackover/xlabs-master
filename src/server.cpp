@@ -3,6 +3,7 @@
 #include "service.hpp"
 #include "console.hpp"
 
+#include "services/getbots_command.hpp"
 #include "services/getservers_command.hpp"
 #include "services/heartbeat_command.hpp"
 #include "services/info_response_command.hpp"
@@ -13,6 +14,7 @@
 server::server(const network::address& bind_addr)
 	: server_base(bind_addr)
 {
+	this->register_service<getbots_command>();
 	this->register_service<getservers_command>();
 	this->register_service<heartbeat_command>();
 	this->register_service<info_response_command>();

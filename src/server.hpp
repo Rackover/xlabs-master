@@ -16,6 +16,22 @@ public:
 	client_list& get_client_list();
 	const client_list& get_client_list() const;
 
+	template <typename T>
+	T* get_service()
+	{
+		static_assert(std::is_base_of<service, T>::value, "Type must be a service!");
+
+		for (auto& service : this->services_)
+		{
+			if (typeid(*service.get()) == typeid(T))
+			{
+				return reinterpret_cast<T*>(service.get());
+			}
+		}
+
+		return nullptr;
+	}
+
 private:
 	server_list server_list_;
 	client_list client_list_;
@@ -26,6 +42,8 @@ private:
 	template <typename T, typename... Args>
 	void register_service(Args&&... args)
 	{
+		static_assert(std::is_base_of<service, T>::value, "Type must be a service!");
+
 		auto service = std::make_unique<T>(*this, std::forward<Args>(args)...);
 		auto* const command = service->get_command();
 		if (command)

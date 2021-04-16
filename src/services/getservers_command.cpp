@@ -29,22 +29,19 @@ void getservers_command::handle_command(const network::address& target, const st
 	auto count = 0;
 	std::string response{};
 
-	this->get_server().get_server_list().find_registered_servers(game_type, protocol, [&response, &count](
-	                                                             const game_server&,
-	                                                             const network::address& address)
-	                                                             {
-		                                                             const auto addr = address.get_in_addr().sin_addr.
-			                                                             s_addr;
-		                                                             const auto port = htons(address.get_port());
+	this->get_server().get_server_list() //
+	    .find_registered_servers(game_type, protocol,
+	                             [&response, &count](const game_server&, const network::address& address)
+	                             {
+		                             const auto addr = address.get_in_addr().sin_addr.s_addr;
+		                             const auto port = htons(address.get_port());
 
-		                                                             response.push_back('\\');
-		                                                             response.append(
-			                                                             reinterpret_cast<const char*>(&addr), 4);
-		                                                             response.append(
-			                                                             reinterpret_cast<const char*>(&port), 2);
+		                             response.push_back('\\');
+		                             response.append(reinterpret_cast<const char*>(&addr), 4);
+		                             response.append(reinterpret_cast<const char*>(&port), 2);
 
-		                                                             ++count;
-	                                                             });
+		                             ++count;
+	                             });
 
 	response.push_back('\\');
 	response.append("EOT");
