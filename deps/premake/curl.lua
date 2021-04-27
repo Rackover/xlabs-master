@@ -27,7 +27,7 @@ filter {}
 end
 
 function curl.project()
-	if not os.is("windows") then
+	if not os.istarget("windows") then
 		return
 	end
 
