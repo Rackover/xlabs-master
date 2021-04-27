@@ -76,6 +76,7 @@
 #include <unordered_set>
 
 #include <gsl/gsl>
+#include <rapidjson/document.h>
 
 #ifdef _WIN32
 #pragma warning(pop)
