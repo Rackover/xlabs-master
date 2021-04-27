@@ -27,7 +27,10 @@ filter {}
 end
 
 function curl.project()
-filter "toolset:msc*"
+	if not os.is("windows") then
+		return
+	end
+
 	project "curl"
 		language "C"
 
@@ -65,7 +68,6 @@ filter "toolset:msc*"
 
 		warnings "Off"
 		kind "StaticLib"
-filter {}
 end
 
 table.insert(dependencies, curl)
