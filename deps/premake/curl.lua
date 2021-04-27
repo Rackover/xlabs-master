@@ -13,6 +13,7 @@ function curl.import()
 end
 
 function curl.includes()
+filter "toolset:msc*"
 	includedirs {
 		path.join(curl.source, "include"),
 	}
@@ -22,9 +23,11 @@ function curl.includes()
 		"CURL_STATICLIB",
 		"CURL_DISABLE_LDAP",
 	}
+filter {}
 end
 
 function curl.project()
+filter "toolset:msc*"
 	project "curl"
 		language "C"
 
@@ -62,6 +65,7 @@ function curl.project()
 
 		warnings "Off"
 		kind "StaticLib"
+filter {}
 end
 
 table.insert(dependencies, curl)
