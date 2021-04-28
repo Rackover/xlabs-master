@@ -46,7 +46,7 @@ void getbots_command::handle_command(const network::address& target, const std::
 			stream << patron << std::endl;
 		}
 	});
-	
+
 	this->get_server().send(target, "getbotsResponse", stream.str());
 	console::log("Sent bot names: %s", target.to_string().data());
 }

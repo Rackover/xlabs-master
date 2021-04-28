@@ -13,7 +13,7 @@ namespace
 
 patreon_handler::patreon_handler(server& server)
 	: service(server)
-, patreon_(load_patreon_key())
+	  , patreon_(load_patreon_key())
 {
 }
 
