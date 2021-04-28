@@ -27,7 +27,7 @@ void patreon_handler::access_patrons(const std::function<void(const patreon::pat
 
 void patreon_handler::run_frame()
 {
-	const auto now = std::chrono::high_resolution_clock::now();
+	const auto now = std::chrono::system_clock::now();
 	if (now - this->last_fetch < 3h)
 	{
 		return;

@@ -15,5 +15,5 @@ public:
 private:
 	patreon patreon_;
 	utils::concurrency::container<patreon::patron_list> patrons_{};
-	std::chrono::high_resolution_clock::time_point last_fetch{};
+	std::chrono::system_clock::time_point last_fetch{};
 };
