@@ -84,15 +84,6 @@
 #include <unordered_set>
 
 #include <gsl/gsl>
-
-#define STRINGIFY(x) #x
-
-#ifdef _DEBUG
-#define RAPIDJSON_ASSERT(x) if(!x) { throw std::runtime_error(std::string("Rapidjson condition failed: ") + STRINGIFY(x)); }
-#else
-#define RAPIDJSON_ASSERT(x)
-#endif
-
 #include <rapidjson/document.h>
 
 #ifdef _WIN32
