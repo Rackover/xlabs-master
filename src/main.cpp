@@ -4,6 +4,8 @@
 #include "server.hpp"
 #include "crypto_key.hpp"
 
+#include "patreon.hpp"
+
 namespace
 {
 	void unsafe_main(const uint16_t port)

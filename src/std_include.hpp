@@ -1,12 +1,17 @@
-#ifdef _WIN32
 #pragma once
 
+#ifdef _WIN32
+
 #pragma warning(push)
+#pragma warning(disable: 4018)
 #pragma warning(disable: 4100)
 #pragma warning(disable: 4127)
 #pragma warning(disable: 4244)
+#pragma warning(disable: 4297)
 #pragma warning(disable: 4458)
 #pragma warning(disable: 4702)
+#pragma warning(disable: 4804)
+#pragma warning(disable: 4806)
 #pragma warning(disable: 4996)
 #pragma warning(disable: 5054)
 #pragma warning(disable: 6011)
@@ -76,6 +81,10 @@
 #include <unordered_set>
 
 #include <gsl/gsl>
+
+#define STRINGIFY(x) #x
+#define RAPIDJSON_ASSERT(x) if(!x) { throw std::runtime_error(std::string("Rapidjson condition failed: ") + STRINGIFY(x)); }
+
 #include <rapidjson/document.h>
 
 #ifdef _WIN32
