@@ -36,6 +36,10 @@
 
 #else
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wbool-compare"
+#pragma GCC diagnostic ignored "-Wlogical-not-parentheses"
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -82,7 +86,12 @@
 #include <gsl/gsl>
 
 #define STRINGIFY(x) #x
+
+#ifdef _DEBUG
 #define RAPIDJSON_ASSERT(x) if(!x) { throw std::runtime_error(std::string("Rapidjson condition failed: ") + STRINGIFY(x)); }
+#else
+#define RAPIDJSON_ASSERT(x)
+#endif
 
 #include <rapidjson/document.h>
 
@@ -94,6 +103,8 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "urlmon.lib" )
 #pragma comment(lib, "iphlpapi.lib")
+#else
+#pragma GCC diagnostic pop
 #endif
 
 using namespace std::literals;
