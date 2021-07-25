@@ -13,13 +13,19 @@ jobs:
     name: Build Windows
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         configuration:
           - Debug
           - Release
         arch:
-          - Win32
+          - x86
           - x64
+        include:
+          - arch: x86
+            platform: Win32
+          - arch: x64
+            platform: x64
     steps:
       - name: Wait for previous workflows
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -47,7 +53,7 @@ jobs:
         uses: ammaraskar/msvc-problem-matcher@master
 
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
-        run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.arch}} build/xlabs-master.sln
+        run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.platform}} build/xlabs-master.sln
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v2
@@ -61,13 +67,19 @@ jobs:
     name: Build Linux
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         configuration:
-          - debug
-          - release
+          - Debug
+          - Release
         arch:
           #- x86
           - x64
+        include:
+          - configuration: Debug
+            config: debug
+          - configuration: Release
+            config: release
     steps:
       - name: Wait for previous workflows
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -99,4 +111,4 @@ jobs:
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |
           pushd build
-          make config=${{matrix.configuration}}_${{matrix.arch}} -j$(nproc)
+          make config=${{matrix.config}}_${{matrix.arch}} -j$(nproc)
