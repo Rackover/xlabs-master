@@ -62,6 +62,11 @@ editandcontinue "Off"
 warnings "Extra"
 characterset "ASCII"
 
+if os.istarget("linux") or os.istarget("darwin") then
+	buildoptions { "-pthread" }
+	linkoptions { "-pthread" }
+end
+
 if _OPTIONS["dev-build"] then
 	defines {"DEV_BUILD"}
 end
