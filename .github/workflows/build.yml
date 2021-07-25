@@ -60,8 +60,8 @@ jobs:
         with:
           name: Windows ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
-            build/bin/**/${{matrix.configuration}}/xlabs-master.exe
-            build/bin/**/${{matrix.configuration}}/xlabs-master.pdb
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master.exe
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master.pdb
 
   build-lin:
     name: Build Linux
@@ -112,3 +112,10 @@ jobs:
         run: |
           pushd build
           make config=${{matrix.config}}_${{matrix.arch}} -j$(nproc)
+
+      - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: Linux ${{matrix.configuration}} ${{matrix.arch}} binaries
+          path: |
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master
