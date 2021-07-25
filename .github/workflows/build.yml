@@ -54,5 +54,5 @@ jobs:
         with:
           name: ${{matrix.configuration}} binaries
           path: |
-            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master.exe
-            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master.pdb
+            build/bin/**/${{matrix.configuration}}/xlabs-master.exe
+            build/bin/**/${{matrix.configuration}}/xlabs-master.pdb
