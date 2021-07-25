@@ -46,7 +46,7 @@ jobs:
       - name: Set up problem matching
         uses: ammaraskar/msvc-problem-matcher@master
 
-      - name: Build ${{matrix.configuration}} binaries
+      - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.arch}} build/xlabs-master.sln
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
@@ -90,3 +90,8 @@ jobs:
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
+
+      - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
+        run: |
+          pushd build
+          make config=${{matrix.configuration}}_${{matrix.arch}} -j$(nproc)
