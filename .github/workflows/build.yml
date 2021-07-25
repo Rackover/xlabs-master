@@ -128,7 +128,7 @@ jobs:
           path: |
             build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master
 
-  build-lin:
+  build-mac:
     name: Build macOS
     runs-on: macos-latest
     strategy:
