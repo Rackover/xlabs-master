@@ -38,13 +38,13 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
 
       - name: Generate project files
-        run: call generate.bat
+        run: cmd /C call generate.bat
 
       - name: Set up problem matching
         uses: ammaraskar/msvc-problem-matcher@master
 
       - name: Build ${{matrix.configuration}} binaries
-        run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=x64 build/master.sln
+        run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=x64 build/xlabs-master.sln
 
       - name: Upload ${{matrix.configuration}} binaries
         uses: actions/upload-artifact@v2
