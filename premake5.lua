@@ -37,9 +37,13 @@ objdir "%{wks.location}/obj"
 targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
 
 configurations {"Debug", "Release"}
+platforms { "x86", "x64" }
 
+filter "platforms:x86"
+architecture "x32"
+
+filter "platforms:x64"
 architecture "x64"
-platforms "x64"
 
 filter { "language:C++", "toolset:not msc*" }
 	buildoptions {
