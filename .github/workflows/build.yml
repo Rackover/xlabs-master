@@ -73,7 +73,7 @@ jobs:
           - Debug
           - Release
         arch:
-          #- x86
+          - x86
           - x64
         include:
           - configuration: Debug
@@ -101,6 +101,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install libcurl4-gnutls-dev
+
+      - name: Install dependencies (x86)
+        if: matrix.arch == 'x86'
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install gcc-multilib
 
       - name: Generate project files
         run: ./generate.sh
