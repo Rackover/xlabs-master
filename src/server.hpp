@@ -23,7 +23,8 @@ public:
 
 		for (auto& service : this->services_)
 		{
-			if (typeid(*service.get()) == typeid(T))
+			const auto& service_ref = *service;
+			if (typeid(service_ref) == typeid(T))
 			{
 				return reinterpret_cast<T*>(service.get());
 			}
