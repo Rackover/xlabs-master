@@ -63,8 +63,8 @@ jobs:
     strategy:
       matrix:
         configuration:
-          - Debug
-          - Release
+          - debug
+          - release
         arch:
           - x86
           - x64
