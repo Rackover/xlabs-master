@@ -49,10 +49,10 @@ jobs:
       - name: Build ${{matrix.configuration}} binaries
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.arch}} build/xlabs-master.sln
 
-      - name: Upload ${{matrix.configuration}} binaries
+      - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v2
         with:
           name: ${{matrix.configuration}} binaries
           path: |
-            build/bin/x64/${{matrix.configuration}}/xlabs-master.exe
-            build/bin/x64/${{matrix.configuration}}/xlabs-master.pdb
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master.exe
+            build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master.pdb
