@@ -52,7 +52,7 @@ jobs:
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v2
         with:
-          name: ${{matrix.configuration}} binaries
+          name: Windows ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
             build/bin/**/${{matrix.configuration}}/xlabs-master.exe
             build/bin/**/${{matrix.configuration}}/xlabs-master.pdb
@@ -86,7 +86,7 @@ jobs:
           lfs: false
 
       - name: Generate project files
-        run: generate.sh
+        run: ./generate.sh
 
       - name: Set up problem matching
         uses: ammaraskar/gcc-problem-matcher@master
