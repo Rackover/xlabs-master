@@ -175,6 +175,6 @@ jobs:
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v2
         with:
-          name: Linux ${{matrix.configuration}} ${{matrix.arch}} binaries
+          name: macOS ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
             build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master

@@ -37,7 +37,9 @@
 #else
 
 #pragma GCC diagnostic push
+#ifndef __APPLE__
 #pragma GCC diagnostic ignored "-Wbool-compare"
+#endif
 #pragma GCC diagnostic ignored "-Wlogical-not-parentheses"
 
 #include <sys/types.h>
