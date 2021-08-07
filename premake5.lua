@@ -37,13 +37,21 @@ objdir "%{wks.location}/obj"
 targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
 
 configurations {"Debug", "Release"}
-platforms { "x86", "x64" }
+
+if os.istarget("darwin") then
+	platforms { "x64", "arm" }
+else
+	platforms { "x86", "x64" }
+end
 
 filter "platforms:x86"
 architecture "x32"
 
 filter "platforms:x64"
 architecture "x64"
+
+filter "platforms:arm"
+architecture "ARM"
 
 filter { "language:C++", "toolset:not msc*" }
 	buildoptions {

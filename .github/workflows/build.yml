@@ -139,6 +139,7 @@ jobs:
           - Release
         arch:
           - x64
+          - arm
         include:
           - configuration: Debug
             config: debug
