@@ -178,3 +178,36 @@ jobs:
           name: macOS ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
             build/bin/${{matrix.arch}}/${{matrix.configuration}}/xlabs-master
+
+  deploy:
+    name: Deploy artifacts
+    needs: [build-win, build-lin, build-mac]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master')
+    steps:
+      - name: Download master server binary
+        uses: actions/download-artifact@v2
+        with:
+          name: Linux Release x64 binaries
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.XLABS_MASTER_SSH_PRIVATE_KEY }}
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+
+      - name: Add known hosts
+        run: ssh-keyscan -H ${{ secrets.XLABS_MASTER_SSH_ADDRESS }} >> ~/.ssh/known_hosts
+
+      - name: Wait for previous workflows
+        uses: softprops/turnstyle@v1
+        with:
+          poll-interval-seconds: 10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload master server binary
+        run: rsync -avz xlabs-master ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }}:${{ env.XLABS_MASTER_SSH_PATH_MASTER_SERVER }}/
+
+      - name: Restart master server
+        run: ssh ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }} ${{ secrets.XLABS_MASTER_SSH_RESTART_MASTER_SERVER }}
