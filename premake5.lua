@@ -52,6 +52,8 @@ architecture "x64"
 
 filter "platforms:arm"
 architecture "ARM"
+buildoptions { "-arch arm64" }
+linkoptions { "-arch arm64" }
 
 filter { "language:C++", "toolset:not msc*" }
 	buildoptions {
