@@ -139,7 +139,6 @@ jobs:
           - Release
         arch:
           - x64
-          - arm
         include:
           - configuration: Debug
             config: debug
@@ -171,7 +170,7 @@ jobs:
       - name: Build ${{matrix.configuration}} ${{matrix.arch}} binaries
         run: |
           pushd build
-          make config=${{matrix.config}}_${{matrix.arch}} -j$(nproc)
+          make config=${{matrix.config}}_${{matrix.arch}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
         uses: actions/upload-artifact@v2
