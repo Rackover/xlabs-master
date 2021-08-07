@@ -207,7 +207,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload master server binary
-        run: rsync -avz xlabs-master ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }}:${{ env.XLABS_MASTER_SSH_PATH_MASTER_SERVER }}/
+        run: rsync -avz xlabs-master ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }}:${{ secrets.XLABS_MASTER_SSH_PATH_MASTER_SERVER }}/
 
       - name: Restart master server
         run: ssh ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }} ${{ secrets.XLABS_MASTER_SSH_RESTART_MASTER_SERVER }}
