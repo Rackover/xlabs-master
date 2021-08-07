@@ -32,8 +32,8 @@ namespace
 
 int main(const int argc, const char** argv)
 {
-	console::set_title("X Labs master");
-	console::log("Starting X Labs master server");
+	console::set_title("X Labs Master");
+	console::log("Starting X Labs Master");
 
 	try
 	{
