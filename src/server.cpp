@@ -47,7 +47,7 @@ const client_list& server::get_client_list() const
 
 void server::run_frame()
 {
-	for (auto& service : services_)
+	for (const auto& service : services_)
 	{
 		try
 		{

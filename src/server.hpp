@@ -19,7 +19,7 @@ public:
 	template <typename T>
 	T* get_service()
 	{
-		static_assert(std::is_base_of<service, T>::value, "Type must be a service!");
+		static_assert(std::is_base_of_v<service, T>, "Type must be a service!");
 
 		for (auto& service : this->services_)
 		{
@@ -43,7 +43,7 @@ private:
 	template <typename T, typename... Args>
 	void register_service(Args&&... args)
 	{
-		static_assert(std::is_base_of<service, T>::value, "Type must be a service!");
+		static_assert(std::is_base_of_v<service, T>, "Type must be a service!");
 
 		auto service = std::make_unique<T>(*this, std::forward<Args>(args)...);
 		auto* const command = service->get_command();

@@ -75,7 +75,7 @@ void server_base::run_socket()
 	{
 		if (!this->receive_data())
 		{
-			this->socket_.sleep(100ms);
+			(void)this->socket_.sleep(100ms);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 #include "std_include.hpp"
 #include "client_list.hpp"
 
-bool client_list::find_client(uint64_t guid, const access_func& accessor)
+bool client_list::find_client(const uint64_t guid, const access_func& accessor)
 {
 	auto found = false;
 
@@ -19,7 +19,7 @@ bool client_list::find_client(uint64_t guid, const access_func& accessor)
 	return found;
 }
 
-bool client_list::find_client(uint64_t guid, const const_access_func& accessor) const
+bool client_list::find_client(const uint64_t guid, const const_access_func& accessor) const
 {
 	auto found = false;
 
