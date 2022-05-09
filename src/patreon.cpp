@@ -54,7 +54,7 @@ namespace
 				}
 
 				std::string id = entry["relationships"]["user"]["data"]["id"].GetString();
-				if (hidden_users.contains(id))
+				if (hidden_users.find(id) != hidden_users.end())
 				{
 					continue;
 				}
