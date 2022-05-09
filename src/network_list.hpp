@@ -1,11 +1,13 @@
 #pragma once
 
 #include <functional>
+
+#include "console.hpp"
 #include "game_server.hpp"
 #include "network/address.hpp"
 #include "utils/concurrency.hpp"
 
-template <typename T>
+template <typename T, size_t IPLimit = 0>
 class network_list
 {
 public:
@@ -104,7 +106,7 @@ public:
 
 			for (const auto& server : list)
 			{
-				// Const cast is ok here
+				// const_cast is ok here
 				context.element_ = const_cast<T*>(&server.second);
 				context.address_ = &server.first;
 
@@ -123,6 +125,19 @@ protected:
 	{
 		this->elements_.access([&](list_type& list)
 		{
+			auto entry = list.find(address);
+			if (entry != list.end())
+			{
+				callback(entry->second);
+				return;
+			}
+
+			if (!is_insertion_allowed(list, address))
+			{
+				console::log("Insertion rejected for target:\t%s", address.to_string().data());
+				return;
+			}
+
 			callback(list[address]);
 		});
 	}
@@ -130,4 +145,29 @@ protected:
 private:
 	using list_type = std::unordered_map<network::address, T>;
 	utils::concurrency::container<list_type> elements_;
+
+	static bool is_insertion_allowed(const list_type& list, const network::address& address)
+	{
+		if constexpr (IPLimit == 0)
+		{
+			return true;
+		}
+
+		const auto target_ip = address.get_in_addr().sin_addr.s_addr;
+
+		size_t occurances = 0;
+		for (const auto& entry : list)
+		{
+			const auto entry_ip = entry.first.get_in_addr().sin_addr.s_addr;
+			if (entry_ip == target_ip)
+			{
+				if (++occurances >= IPLimit)
+				{
+					return false;
+				}
+			}
+		}
+
+		return false;
+	}
 };
