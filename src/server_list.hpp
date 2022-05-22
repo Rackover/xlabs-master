@@ -3,7 +3,7 @@
 #include "game_server.hpp"
 #include "network_list.hpp"
 
-class server_list : public network_list<game_server, 10>
+class server_list : public network_list<game_server, 15>
 {
 public:
 	void find_registered_servers(game_type game, int protocol, const access_func& accessor);
