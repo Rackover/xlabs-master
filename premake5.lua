@@ -39,29 +39,29 @@ targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
 configurations {"Debug", "Release"}
 
 if os.istarget("darwin") then
-	platforms { "x64", "arm" }
+	platforms {"x64", "arm"}
 else
-	platforms { "x86", "x64" }
+	platforms {"x86", "x64"}
 end
 
 filter "platforms:x86"
 architecture "x32"
 
 filter "platforms:x64"
-architecture "x64"
+architecture "x86_64"
 
 filter "platforms:arm"
 architecture "ARM"
-buildoptions { "-arch arm64" }
-linkoptions { "-arch arm64" }
+buildoptions {"-arch arm64"}
+linkoptions {"-arch arm64"}
 
 filter { "language:C++", "toolset:not msc*" }
 	buildoptions {
-		"-std=c++17"
+		"-std=c++2a"
 	}
 filter "toolset:msc*"
 	buildoptions {
-		"/std:c++latest"
+		"/std:c++20"
 	}
 filter {}
 
@@ -87,19 +87,16 @@ end
 
 flags {"NoIncrementalLink", "NoMinimalRebuild", "MultiProcessorCompile", "No64BitChecks"}
 
-configuration "Release"
-optimize "Speed"
+filter "configurations:Release"
+	optimize "Speed"
+	defines {"NDEBUG"}
+	flags {"FatalCompileWarnings"}
+filter {}
 
-defines {"NDEBUG"}
-
-flags {"FatalCompileWarnings"}
-
-configuration "Debug"
-optimize "Debug"
-
-defines {"DEBUG", "_DEBUG"}
-
-configuration {}
+filter "configurations:Debug"
+	optimize "Debug"
+	defines {"DEBUG", "_DEBUG"}
+filter {}
 
 project "xlabs-master"
 kind "ConsoleApp"
