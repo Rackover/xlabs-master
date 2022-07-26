@@ -57,11 +57,11 @@ linkoptions {"-arch arm64"}
 
 filter { "language:C++", "toolset:not msc*" }
 	buildoptions {
-		"-std=c++2a"
+		"-std=c++17"
 	}
 filter "toolset:msc*"
 	buildoptions {
-		"/std:c++20"
+		"/std:c++17"
 	}
 filter {}
 
