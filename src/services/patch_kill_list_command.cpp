@@ -13,18 +13,24 @@ const char* patch_kill_list_command::get_command() const
 
 void patch_kill_list_command::handle_command(const network::address& target, const std::string_view& data)
 {
-	
 	std::string key;
-	char* buf = nullptr;
-	size_t sz = 0;
-	
-	if (_dupenv_s(&buf, &sz, "KILL_LIST_PATCH_SECRET_KEY") == 0 && buf != nullptr)
-	{
-		key = buf;
-		free(buf);
-	}
 
-	if (sz == 0)
+	size_t size;
+	char key_buff[128];
+	errno_t result = getenv_s(&size, key_buff, 128, key_env_name.data());
+
+	if (size > 0) {
+
+		if (result == 0)
+		{
+			key = key_buff;
+		}
+		else
+		{
+			console::error("Error %i when trying to get the key from env %s", result, key_env_name.data());
+		}
+	}
+	else
 	{
 		// No kill list secret defined, no patching possible
 		return;
