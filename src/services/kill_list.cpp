@@ -24,9 +24,13 @@ bool kill_list::contains(const network::address& address, OUT std::string& reaso
 void kill_list::add_to_kill_list(const kill_list::kill_list_entry& add)
 {
 	std::lock_guard<std::recursive_mutex> _(kill_list_mutex);
-	entries.emplace(add.ip_address, add);
-	console::info(utils::string::va("Added %s to kill list (reason: %s)", add.ip_address.data(), add.reason.data()));
-	write_to_disk();
+
+	if (entries.find(add.ip_address) == entries.end())
+	{
+		entries.emplace(add.ip_address, add);
+		console::info(utils::string::va("Added %s to kill list (reason: %s)", add.ip_address.data(), add.reason.data()));
+		write_to_disk();
+	}
 }
 
 void kill_list::remove_from_kill_list(const network::address& remove)
@@ -56,7 +60,8 @@ void kill_list::reload_from_disk()
 		std::string line;
 
 		entries.clear();
-		while (std::getline(string_stream, line)) {
+		while (std::getline(string_stream, line)) 
+		{
 			if (line[0] == '#')
 			{
 				// comments or ignored line

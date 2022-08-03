@@ -28,7 +28,6 @@ void patch_kill_list_command::handle_command(const network::address& target, con
 	}
 
 	const auto& supplied_key = params[0];
-	
 	auto supplied_address = params[1];
 
 	std::string supplied_reason{};
@@ -40,7 +39,7 @@ void patch_kill_list_command::handle_command(const network::address& target, con
 
 	bool should_remove = false;
 
-	if (supplied_address[0] == '-')
+	if (supplied_address[0] == '-') // e.g.  -1.2.3.4 removes it from the list, while 1.2.3.4 adds it to the list
 	{
 		should_remove = true;
 		supplied_address = supplied_address.substr(1);
