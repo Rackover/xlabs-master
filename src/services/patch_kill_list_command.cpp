@@ -11,16 +11,17 @@ const char* patch_kill_list_command::get_command() const
 	return "patchkill";
 }
 
-void patch_kill_list_command::handle_command(const network::address& target, const std::string_view& data)
+void patch_kill_list_command::handle_command([[maybe_unused]] const network::address& target, const std::string_view& data)
 {
 	std::string key;
-
 	size_t size;
+
+#if _WIN32
 	char key_buff[128];
 	auto result = getenv_s(&size, key_buff, 128, key_env_name.data());
 
-	if (size > 0) {
-
+	if (size > 0)
+	{
 		if (result == 0)
 		{
 			key = key_buff;
@@ -30,11 +31,19 @@ void patch_kill_list_command::handle_command(const network::address& target, con
 			console::error("Error %i when trying to get the key from env %s", result, key_env_name.data());
 		}
 	}
-	else
+#else
+
+	key = std::getenv(key_env_name.data());
+	size = key.size();
+
+#endif
+
+	if (size <= 0) 
 	{
 		// No kill list secret defined, no patching possible
 		return;
-	}
+}
+
 
 	const utils::parameters params(data);
 	if (params.size() < 2)
