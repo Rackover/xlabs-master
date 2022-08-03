@@ -28,7 +28,7 @@ void kill_list::add_to_kill_list(const kill_list::kill_list_entry& add)
 	if (entries.find(add.ip_address) == entries.end())
 	{
 		entries.emplace(add.ip_address, add);
-		console::info(utils::string::va("Added %s to kill list (reason: %s)", add.ip_address.data(), add.reason.data()));
+		console::info("Added %s to kill list (reason: %s)", add.ip_address.data(), add.reason.data());
 		write_to_disk();
 	}
 }
@@ -43,7 +43,7 @@ void kill_list::remove_from_kill_list(const std::string& remove)
 	std::lock_guard<std::recursive_mutex> _(kill_list_mutex);
 	if (entries.erase(remove))
 	{
-		console::info(utils::string::va("Removed %s from kill list", remove.data()));
+		console::info("Removed %s from kill list", remove.data());
 		write_to_disk();
 	}
 }
@@ -96,11 +96,11 @@ void kill_list::reload_from_disk()
 			entries.emplace(ip, kill_list::kill_list_entry(ip, comment));
 		}
 
-		console::info(utils::string::va("Loaded %i kill list entries from %s", entries.size(), kill_file.data()));
+		console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
 	}
 	else
 	{
-		console::info(utils::string::va("Could not find %s, no kill list will be loaded.", kill_file.data()));
+		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
 	}
 }
 
@@ -118,7 +118,7 @@ void kill_list::write_to_disk()
 	}
 
 	utils::io::write_file(kill_file, stream.str());
-	console::info(utils::string::va("Wrote %s to disk (%i entries)", kill_file.data(), entries.size()));
+	console::info("Wrote %s to disk (%i entries)", kill_file.data(), entries.size());
 }
 
 kill_list::kill_list(server& server) : service(server)

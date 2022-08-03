@@ -13,9 +13,18 @@ const char* patch_kill_list_command::get_command() const
 
 void patch_kill_list_command::handle_command(const network::address& target, const std::string_view& data)
 {
-	auto key = std::getenv("KILL_LIST_PATCH_SECRET_KEY");
+	
+	std::string key;
+	char* buf = nullptr;
+	size_t sz = 0;
+	
+	if (_dupenv_s(&buf, &sz, "KILL_LIST_PATCH_SECRET_KEY") == 0 && buf != nullptr)
+	{
+		key = buf;
+		free(buf);
+	}
 
-	if (strnlen(key, 128) == 0)
+	if (sz == 0)
 	{
 		// No kill list secret defined, no patching possible
 		return;
@@ -61,6 +70,6 @@ void patch_kill_list_command::handle_command(const network::address& target, con
 	}
 	else
 	{
-		console::warn(utils::string::va("Rejected kill list patch because the supplied key (%s) was wrong", supplied_key.data()));
+		console::warn("Rejected kill list patch because the supplied key (%s) was wrong", supplied_key.data());
 	}
 }
