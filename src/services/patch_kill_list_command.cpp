@@ -42,7 +42,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 	{
 		// No kill list secret defined, no patching possible
 		return;
-}
+	}
 
 
 	const utils::parameters params(data);
