@@ -56,7 +56,7 @@ void patch_kill_list_command::handle_command(const network::address& target, con
 		}
 		else
 		{
-			kill_list_service->add_to_kill_list(const kill_list::kill_list_entry(supplied_address, supplied_reason));
+			kill_list_service->add_to_kill_list(kill_list::kill_list_entry(supplied_address, supplied_reason));
 		}
 	}
 	else
