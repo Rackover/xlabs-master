@@ -11,6 +11,7 @@
 #include "services/elimination_handler.hpp"
 #include "services/statistics_handler.hpp"
 #include "services/patreon_handler.hpp"
+#include "services/kill_list.hpp"
 
 server::server(const network::address& bind_addr)
 	: server_base(bind_addr)
@@ -23,6 +24,7 @@ server::server(const network::address& bind_addr)
 	this->register_service<elimination_handler>();
 	this->register_service<statistics_handler>();
 	this->register_service<patreon_handler>();
+	this->register_service<kill_list>();
 }
 
 server_list& server::get_server_list()
@@ -73,6 +75,14 @@ void server::handle_command(const network::address& target, const std::string_vi
 		console::warn("Unhandled command (%s): %.*s", target.to_string().data(), command.size(), command.data());
 		return;
 	}
+
+	std::string ban_reason;
+	if (this->get_service<kill_list>()->contains(target, ban_reason))
+	{
+		console::log("Refused command from server %s - target is on the kill list (%s)", target.to_string().data(), ban_reason.data());
+		return;
+	}
+
 
 #ifdef DEBUG
 	console::log("Handling command (%s): %.*s - %.*s", target.to_string().data(), command.size(), command.data(),
