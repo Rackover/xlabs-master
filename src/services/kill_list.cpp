@@ -3,7 +3,7 @@
 #include "utils/io.hpp"
 #include "utils/string.hpp"
 
-bool kill_list::contains(const network::address& address, OUT std::string& reason)
+bool kill_list::contains(const network::address& address, std::string& reason)
 {
 	std::string str_address = address.to_string();
 
