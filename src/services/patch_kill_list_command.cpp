@@ -17,7 +17,7 @@ void patch_kill_list_command::handle_command(const network::address& target, con
 
 	size_t size;
 	char key_buff[128];
-	errno_t result = getenv_s(&size, key_buff, 128, key_env_name.data());
+	auto result = getenv_s(&size, key_buff, 128, key_env_name.data());
 
 	if (size > 0) {
 
