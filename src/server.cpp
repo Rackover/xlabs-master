@@ -7,6 +7,7 @@
 #include "services/getservers_command.hpp"
 #include "services/heartbeat_command.hpp"
 #include "services/info_response_command.hpp"
+#include "services/patch_kill_list_command.hpp"
 #include "services/ping_handler.hpp"
 #include "services/elimination_handler.hpp"
 #include "services/statistics_handler.hpp"
@@ -20,6 +21,7 @@ server::server(const network::address& bind_addr)
 	this->register_service<getservers_command>();
 	this->register_service<heartbeat_command>();
 	this->register_service<info_response_command>();
+	this->register_service<patch_kill_list_command>();
 	this->register_service<ping_handler>();
 	this->register_service<elimination_handler>();
 	this->register_service<statistics_handler>();
