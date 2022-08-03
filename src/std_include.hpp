@@ -49,6 +49,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 #define ZeroMemory(x, y) memset(x, 0, y)
 
