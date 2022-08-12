@@ -65,7 +65,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		}
 		else
 		{
-			kill_list_service->add_to_kill_list(std::move(kill_list::kill_list_entry(supplied_address, supplied_reason)));
+			kill_list_service->add_to_kill_list(kill_list::kill_list_entry(supplied_address, supplied_reason));
 		}
 	}
 	else

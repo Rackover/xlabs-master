@@ -24,7 +24,7 @@ bool kill_list::contains(const network::address& address, std::string& reason)
 
 void kill_list::add_to_kill_list(kill_list::kill_list_entry add)
 {
-	entries_container.access([&add, this](kill_list_entries& entries)
+	entries_container.access([&add](kill_list_entries& entries)
 		{
 			if (entries.find(add.ip_address) == entries.end())
 			{
@@ -43,7 +43,7 @@ void kill_list::remove_from_kill_list(const network::address& remove)
 
 void kill_list::remove_from_kill_list(const std::string& remove)
 {
-	entries_container.access([&remove, this](kill_list_entries& entries)
+	entries_container.access([&remove](kill_list_entries& entries)
 	{
 		if (entries.erase(remove))
 		{
