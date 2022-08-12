@@ -25,14 +25,14 @@ public:
 	kill_list(server& server);
 
 	bool contains(const network::address& address, std::string& reason);
-	void add_to_kill_list(const kill_list::kill_list_entry& add);
+	void add_to_kill_list(kill_list::kill_list_entry add);
 	void remove_from_kill_list(const network::address& remove);
 	void remove_from_kill_list(const std::string& remove);
 
 private:
 	std::string secret_;
-	std::unordered_map<std::string, kill_list_entry> entries;
+	using kill_list_entries = std::unordered_map<std::string, kill_list_entry>;
+	utils::concurrency::container<kill_list_entries> entries_container;
 	void reload_from_disk();
 	void write_to_disk();
-	std::recursive_mutex kill_list_mutex;
 };

@@ -1,10 +1,12 @@
 #include <std_include.hpp>
 #include "patch_kill_list_command.hpp"
 
+#include "crypto_key.hpp"
 #include "services/kill_list.hpp"
 
 #include "utils/string.hpp"
 #include "utils/parameters.hpp"
+#include "utils/io.hpp"
 
 const char* patch_kill_list_command::get_command() const
 {
@@ -13,37 +15,13 @@ const char* patch_kill_list_command::get_command() const
 
 void patch_kill_list_command::handle_command([[maybe_unused]] const network::address& target, const std::string_view& data)
 {
-	std::string key;
-	size_t size;
-
-#if _WIN32
-	char key_buff[128];
-	auto result = getenv_s(&size, key_buff, 128, key_env_name.data());
-
-	if (size > 0)
-	{
-		if (result == 0)
-		{
-			key = key_buff;
-		}
-		else
-		{
-			console::error("Error %i when trying to get the key from env %s", result, key_env_name.data());
-		}
-	}
-#else
-
-	key = std::getenv(key_env_name.data());
-	size = key.size();
-
-#endif
-
-	if (size <= 0) 
+	if (!utils::io::file_exists(key_file_name))
 	{
 		// No kill list secret defined, no patching possible
 		return;
 	}
 
+	const std::string key = utils::io::read_file(key_file_name);
 
 	const utils::parameters params(data);
 	if (params.size() < 2)
@@ -51,7 +29,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		throw execution_exception{ "Invalid parameter count" };
 	}
 
-	const auto& supplied_key = params[0];
+	const auto& supplied_key_encrypted = params[0];
 	auto supplied_address = params[1];
 
 	std::string supplied_reason{};
@@ -69,6 +47,13 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		supplied_address = supplied_address.substr(1);
 	}
 
+	auto crypto_key = crypto_key::get(); 
+	std::string supplied_key = supplied_key_encrypted;
+
+	if (!utils::cryptography::ecc::decrypt(crypto_key, supplied_key))
+	{
+		throw execution_exception{ "Decryption of the kill list patch key failed" };
+	}
 
 	if (supplied_key == key)
 	{
@@ -80,7 +65,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		}
 		else
 		{
-			kill_list_service->add_to_kill_list(kill_list::kill_list_entry(supplied_address, supplied_reason));
+			kill_list_service->add_to_kill_list(std::move(kill_list::kill_list_entry(supplied_address, supplied_reason)));
 		}
 	}
 	else
