@@ -13,23 +13,16 @@ const char* patch_kill_list_command::get_command() const
 	return "patchkill";
 }
 
+// patchkill signature (-)target_ip (ban_reason)
 void patch_kill_list_command::handle_command([[maybe_unused]] const network::address& target, const std::string_view& data)
 {
-	if (!utils::io::file_exists(key_file_name))
-	{
-		// No kill list secret defined, no patching possible
-		return;
-	}
-
-	const std::string key = utils::io::read_file(key_file_name);
-
 	const utils::parameters params(data);
 	if (params.size() < 2)
 	{
 		throw execution_exception{ "Invalid parameter count" };
 	}
-
-	const auto& supplied_key_encrypted = params[0];
+	
+	const auto& signature = utils::cryptography::base64::decode(params[0]);
 	auto supplied_address = params[1];
 
 	std::string supplied_reason{};
@@ -47,29 +40,26 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		supplied_address = supplied_address.substr(1);
 	}
 
-	auto crypto_key = crypto_key::get(); 
-	std::string supplied_key = supplied_key_encrypted;
 
-	if (!utils::cryptography::ecc::decrypt(crypto_key, supplied_key))
+	auto challenge = utils::cryptography::random::get_challenge();
+	auto heartbeat = std::chrono::high_resolution_clock::now();
+
+
+	auto crypto_key = crypto_key::get(); 
+
+	if (!utils::cryptography::ecc::verify_message(crypto_key, params[1], signature))
 	{
-		throw execution_exception{ "Decryption of the kill list patch key failed" };
+		throw execution_exception{ "Signature verification of the kill list patch key failed" };
 	}
 
-	if (supplied_key == key)
-	{
-		auto kill_list_service = this->get_server().get_service<kill_list>();
+	auto kill_list_service = this->get_server().get_service<kill_list>();
 
-		if (should_remove)
-		{
-			kill_list_service->remove_from_kill_list(supplied_address);
-		}
-		else
-		{
-			kill_list_service->add_to_kill_list(kill_list::kill_list_entry(supplied_address, supplied_reason));
-		}
+	if (should_remove)
+	{
+		kill_list_service->remove_from_kill_list(supplied_address);
 	}
 	else
 	{
-		console::warn("Rejected kill list patch because the supplied key (%s) was wrong", supplied_key.data());
+		kill_list_service->add_to_kill_list(kill_list::kill_list_entry(supplied_address, supplied_reason));
 	}
 }
