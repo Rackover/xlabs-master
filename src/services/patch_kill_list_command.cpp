@@ -40,11 +40,6 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		supplied_address = supplied_address.substr(1);
 	}
 
-
-	auto challenge = utils::cryptography::random::get_challenge();
-	auto heartbeat = std::chrono::high_resolution_clock::now();
-
-
 	auto crypto_key = crypto_key::get(); 
 
 	if (!utils::cryptography::ecc::verify_message(crypto_key, params[1], signature))
