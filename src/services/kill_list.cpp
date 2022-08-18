@@ -67,20 +67,18 @@ void kill_list::remove_from_kill_list(const std::string& remove)
 		return false;
 	});
 
-	if (any_change)
+	if (!any_change)
 	{
-		write_to_disk();
+		console::info("%s not in kill list, doing nothing", remove.data());
+		return;
 	}
-	else
-	{
-		console::info("%s not kill list, not doing anything", remove.data());
-	}
+
+	write_to_disk();
 }
 
 void kill_list::reload_from_disk()
 {
 	std::string contents;
-	
 	if (!utils::io::read_file(kill_file, &contents))
 	{
 		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
