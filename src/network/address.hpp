@@ -19,7 +19,7 @@ namespace network
 		const sockaddr_in& get_in_addr() const;
 
 		[[nodiscard]] bool is_local() const;
-		[[nodiscard]] std::string to_string(bool with_port=true) const;
+		[[nodiscard]] std::string to_string(bool with_port = true) const;
 
 		bool operator==(const address& obj) const;
 

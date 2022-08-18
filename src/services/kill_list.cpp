@@ -11,7 +11,7 @@ bool kill_list::contains(const network::address& address, std::string& reason)
 		{
 			if (entries.find(str_address) != entries.end())
 			{
-				auto entry = entries.at(str_address);
+				auto& entry = entries.at(str_address);
 
 				reason = entry.reason;
 				return true;
@@ -98,7 +98,7 @@ void kill_list::reload_from_disk()
 				}
 
 				std::string ip;
-				std::string comment{};
+				std::string comment;
 
 				auto index = line.find(' ');
 				if (line.find(' ') != std::string::npos)
@@ -141,14 +141,14 @@ void kill_list::write_to_disk()
 	std::ostringstream stream;
 	entries_container.access([&stream, this](kill_list_entries& entries)
 	{
-		for (auto kv : entries)
+		for (const auto& kv : entries)
 		{
-			auto entry = kv.second;
+			auto& entry = kv.second;
 			stream << entry.ip_address << " " << entry.reason << "\n";
 		}
 
 		utils::io::write_file(kill_file, stream.str());
-		console::info("Wrote %s to disk (%i entries)", kill_file.data(), entries.size());
+		console::info("Wrote %s to disk (%u entries)", kill_file.data(), entries.size());
 	});
 }
 

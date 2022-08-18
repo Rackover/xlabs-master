@@ -85,7 +85,6 @@ void server::handle_command(const network::address& target, const std::string_vi
 		return;
 	}
 
-
 #ifdef DEBUG
 	console::log("Handling command (%s): %.*s - %.*s", target.to_string().data(), command.size(), command.data(),
 	             data.size(), data.data());

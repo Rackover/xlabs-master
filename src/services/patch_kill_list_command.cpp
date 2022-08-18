@@ -19,7 +19,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 	const utils::parameters params(data);
 	if (params.size() < 3)
 	{
-		throw execution_exception{ "Invalid parameter count" };
+		throw execution_exception("Invalid parameter count");
 	}
 	
 	const auto& signature = utils::cryptography::base64::decode(params[0]);
@@ -27,16 +27,16 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 
 	if (!should_remove && params[1] != "add"s)
 	{
-		throw execution_exception{ "Invalid parameter #2: should be 'add' or 'remove'" };
+		throw execution_exception("Invalid parameter #2: should be 'add' or 'remove'");
 	}
 
-	auto supplied_address = params[2];
+	const auto& supplied_address = params[2];
 
-	std::string supplied_reason{};
+	std::string supplied_reason;
 
 	if (params.size() > 4)
 	{
-		for (size_t i = 3; i < params.size(); i++)
+		for (size_t i = 3; i < params.size(); ++i)
 		{
 			supplied_reason += params[i] + " ";
 		}
@@ -46,7 +46,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 
 	if (!utils::cryptography::ecc::verify_message(crypto_key, supplied_address, signature))
 	{
-		throw execution_exception{ "Signature verification of the kill list patch key failed" };
+		throw execution_exception("Signature verification of the kill list patch key failed");
 	}
 
 	auto kill_list_service = this->get_server().get_service<kill_list>();
