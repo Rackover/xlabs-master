@@ -20,7 +20,7 @@ public:
 		}
 	};
 
-	const std::string kill_file = "./KILL.TXT";
+	const std::string kill_file = "./kill.txt";
 
 	kill_list(server& server);
 
