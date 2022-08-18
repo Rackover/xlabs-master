@@ -82,56 +82,55 @@ void kill_list::reload_from_disk()
 	if (!utils::io::file_exists(kill_file))
 	{
 		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
+		return;
 	}
-	else
+
+	std::string contents = utils::io::read_file(kill_file);
+
+	std::istringstream string_stream(contents);
+	std::string line;
+
+	entries_container.access([&string_stream, &line, this](kill_list_entries& entries)
 	{
-		std::string contents = utils::io::read_file(kill_file);
-
-		std::istringstream string_stream(contents);
-		std::string line;
-
-		entries_container.access([&string_stream, &line, this](kill_list_entries& entries)
+		entries.clear();
+		while (std::getline(string_stream, line))
 		{
-			entries.clear();
-			while (std::getline(string_stream, line))
+			if (line[0] == '#')
 			{
-				if (line[0] == '#')
-				{
-					// comments or ignored line
-					continue;
-				}
-
-				std::string ip;
-				std::string comment;
-
-				auto index = line.find(' ');
-				if (line.find(' ') != std::string::npos)
-				{
-					ip = line.substr(0, index);
-					comment = line.substr(index + 1);
-				}
-				else
-				{
-					ip = line;
-				}
-
-				if (ip.empty())
-				{
-					continue;
-				}
-
-				// Double line breaks from windows' \r\n
-				if (ip[ip.size() - 1] == '\r')
-				{
-					ip.pop_back();
-				}
-
-				entries.emplace(ip, kill_list::kill_list_entry(ip, comment));
+				// comments or ignored line
+				continue;
 			}
 
-			console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
-		});
-	}
+			std::string ip;
+			std::string comment;
+
+			auto index = line.find(' ');
+			if (line.find(' ') != std::string::npos)
+			{
+				ip = line.substr(0, index);
+				comment = line.substr(index + 1);
+			}
+			else
+			{
+				ip = line;
+			}
+
+			if (ip.empty())
+			{
+				continue;
+			}
+
+			// Double line breaks from windows' \r\n
+			if (ip[ip.size() - 1] == '\r')
+			{
+				ip.pop_back();
+			}
+
+			entries.emplace(ip, kill_list::kill_list_entry(ip, comment));
+		}
+
+		console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
+	});
 }
 
 void kill_list::write_to_disk()
