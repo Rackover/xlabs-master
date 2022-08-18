@@ -13,36 +13,38 @@ const char* patch_kill_list_command::get_command() const
 	return "patchkill";
 }
 
-// patchkill signature (-)target_ip (ban_reason)
+// patchkill signature add/remove target_ip (ban_reason)
 void patch_kill_list_command::handle_command([[maybe_unused]] const network::address& target, const std::string_view& data)
 {
 	const utils::parameters params(data);
-	if (params.size() < 2)
+	if (params.size() < 3)
 	{
 		throw execution_exception{ "Invalid parameter count" };
 	}
 	
 	const auto& signature = utils::cryptography::base64::decode(params[0]);
-	auto supplied_address = params[1];
+	bool should_remove = params[1] == "remove"s;
+
+	if (!should_remove && params[1] != "add"s)
+	{
+		throw execution_exception{ "Invalid parameter #2: should be 'add' or 'remove'" };
+	}
+
+	auto supplied_address = params[2];
 
 	std::string supplied_reason{};
 
-	if (params.size() > 3)
+	if (params.size() > 4)
 	{
-		supplied_reason = params[2];
-	}
-
-	bool should_remove = false;
-
-	if (supplied_address[0] == '-') // e.g.  -1.2.3.4 removes it from the list, while 1.2.3.4 adds it to the list
-	{
-		should_remove = true;
-		supplied_address = supplied_address.substr(1);
+		for (size_t i = 3; i < params.size(); i++)
+		{
+			supplied_reason += params[i] + " ";
+		}
 	}
 
 	auto crypto_key = crypto_key::get(); 
 
-	if (!utils::cryptography::ecc::verify_message(crypto_key, params[1], signature))
+	if (!utils::cryptography::ecc::verify_message(crypto_key, supplied_address, signature))
 	{
 		throw execution_exception{ "Signature verification of the kill list patch key failed" };
 	}

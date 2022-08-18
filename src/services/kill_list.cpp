@@ -5,35 +5,49 @@
 
 bool kill_list::contains(const network::address& address, std::string& reason)
 {
-	std::string str_address = address.to_string();
-	bool contains = false;
+	std::string str_address = address.to_string(false);
 
-	entries_container.access([str_address, &reason, &contains](const kill_list_entries& entries)
+	return entries_container.access<bool>([&str_address, &reason](const kill_list_entries& entries)
 		{
 			if (entries.find(str_address) != entries.end())
 			{
 				auto entry = entries.at(str_address);
 
 				reason = entry.reason;
-				contains = true;
+				return true;
 			}
-		});
 
-	return contains;
+			return false;
+		});
 }
 
 void kill_list::add_to_kill_list(kill_list::kill_list_entry add)
 {
-	entries_container.access([&add](kill_list_entries& entries)
+	bool any_change = false;
+	entries_container.access([&add, &any_change](kill_list_entries& entries)
 		{
-			if (entries.find(add.ip_address) == entries.end())
+			auto existing_entry = entries.find(add.ip_address);
+			if (existing_entry == entries.end() || existing_entry->second.reason != add.reason)
 			{
-				entries.emplace(add.ip_address, add);
+				if (existing_entry != entries.end())
+				{
+					entries.erase(existing_entry);
+				}
+
+				entries.emplace(add.ip_address, std::move(add));
 				console::info("Added %s to kill list (reason: %s)", add.ip_address.data(), add.reason.data());
+				any_change = true;
 			}
 		});
 
-	write_to_disk();
+	if (any_change)
+	{
+		write_to_disk();
+	}
+	else
+	{
+		console::info("%s already in kill list, not doing anything", add.ip_address.data());
+	}
 }
 
 void kill_list::remove_from_kill_list(const network::address& remove)
@@ -43,15 +57,24 @@ void kill_list::remove_from_kill_list(const network::address& remove)
 
 void kill_list::remove_from_kill_list(const std::string& remove)
 {
-	entries_container.access([&remove](kill_list_entries& entries)
+	bool any_change = false;
+	entries_container.access([&remove, &any_change](kill_list_entries& entries)
 	{
 		if (entries.erase(remove))
 		{
 			console::info("Removed %s from kill list", remove.data());
+			any_change = true;
 		}
 	});
 
-	write_to_disk();
+	if (any_change)
+	{
+		write_to_disk();
+	}
+	else
+	{
+		console::info("%s not kill list, not doing anything", remove.data());
+	}
 }
 
 void kill_list::reload_from_disk()
