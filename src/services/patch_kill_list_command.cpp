@@ -4,9 +4,8 @@
 #include "crypto_key.hpp"
 #include "services/kill_list.hpp"
 
-#include "utils/string.hpp"
-#include "utils/parameters.hpp"
-#include "utils/io.hpp"
+#include <utils/parameters.hpp>
+#include <utils/io.hpp>
 
 const char* patch_kill_list_command::get_command() const
 {
@@ -42,14 +41,14 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 		}
 	}
 
-	auto crypto_key = crypto_key::get(); 
+	const auto& crypto_key = crypto_key::get(); 
 
 	if (!utils::cryptography::ecc::verify_message(crypto_key, supplied_address, signature))
 	{
 		throw execution_exception("Signature verification of the kill list patch key failed");
 	}
 
-	auto kill_list_service = this->get_server().get_service<kill_list>();
+	const auto kill_list_service = this->get_server().get_service<kill_list>();
 
 	if (should_remove)
 	{

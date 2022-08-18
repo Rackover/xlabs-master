@@ -1,7 +1,11 @@
 #include "std_include.hpp"
 #include "kill_list.hpp"
 #include "utils/io.hpp"
-#include "utils/string.hpp"
+
+kill_list::kill_list_entry::kill_list_entry(std::string ip_address, std::string reason)
+	: ip_address_(std::move(ip_address)), reason_(std::move(reason))
+{
+}
 
 bool kill_list::contains(const network::address& address, std::string& reason)
 {
@@ -12,8 +16,7 @@ bool kill_list::contains(const network::address& address, std::string& reason)
 			if (entries.find(str_address) != entries.end())
 			{
 				auto& entry = entries.at(str_address);
-
-				reason = entry.reason;
+				reason = entry.reason_;
 				return true;
 			}
 
@@ -21,20 +24,20 @@ bool kill_list::contains(const network::address& address, std::string& reason)
 		});
 }
 
-void kill_list::add_to_kill_list(kill_list::kill_list_entry add)
+void kill_list::add_to_kill_list(kill_list_entry add)
 {
-	bool any_change = entries_container.access<bool>([&add, &any_change](kill_list_entries& entries)
+	const auto any_change = entries_container.access<bool>([&add](kill_list_entries& entries)
+	{
+		auto existing_entry = entries.find(add.ip_address_);
+		if (existing_entry == entries.end() || existing_entry->second.reason_ != add.reason_)
 		{
-			auto existing_entry = entries.find(add.ip_address);
-			if (existing_entry == entries.end() || existing_entry->second.reason != add.reason)
-			{
-				entries[add.ip_address] = std::move(add);
-				console::info("Added %s to kill list (reason: %s)", add.ip_address.data(), add.reason.data());
-				return true;
-			}
+			console::info("Added %s to kill list (reason: %s)", add.ip_address_.data(), add.reason_.data());
+			entries[add.ip_address_] = std::move(add);
+			return true;
+		}
 
-			return false;
-		});
+		return false;
+	});
 
 	if (any_change)
 	{
@@ -42,7 +45,7 @@ void kill_list::add_to_kill_list(kill_list::kill_list_entry add)
 	}
 	else
 	{
-		console::info("%s already in kill list, not doing anything", add.ip_address.data());
+		console::info("%s already in kill list, not doing anything", add.ip_address_.data());
 	}
 }
 
@@ -78,57 +81,56 @@ void kill_list::reload_from_disk()
 {
 	std::string contents;
 	
-	if (utils::io::read_file(kill_file, &contents))
-	{
-		std::istringstream string_stream(contents);
-		std::string line;
-
-		entries_container.access([&string_stream, &line, this](kill_list_entries& entries)
-			{
-				entries.clear();
-				while (std::getline(string_stream, line))
-				{
-					if (line[0] == '#')
-					{
-						// comments or ignored line
-						continue;
-					}
-
-					std::string ip;
-					std::string comment;
-
-					auto index = line.find(' ');
-					if (line.find(' ') != std::string::npos)
-					{
-						ip = line.substr(0, index);
-						comment = line.substr(index + 1);
-					}
-					else
-					{
-						ip = line;
-					}
-
-					if (ip.empty())
-					{
-						continue;
-					}
-
-					// Double line breaks from windows' \r\n
-					if (ip[ip.size() - 1] == '\r')
-					{
-						ip.pop_back();
-					}
-
-					entries.emplace(ip, kill_list::kill_list_entry(ip, comment));
-				}
-
-				console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
-			});
-	}
-	else 
+	if (!utils::io::read_file(kill_file, &contents))
 	{
 		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
+		return;
 	}
+
+	std::istringstream string_stream(contents);
+	std::string line;
+
+	entries_container.access([&string_stream, &line, this](kill_list_entries& entries)
+	{
+		entries.clear();
+		while (std::getline(string_stream, line))
+		{
+			if (line[0] == '#')
+			{
+				// comments or ignored line
+				continue;
+			}
+
+			std::string ip;
+			std::string comment;
+
+			auto index = line.find(' ');
+			if (line.find(' ') != std::string::npos)
+			{
+				ip = line.substr(0, index);
+				comment = line.substr(index + 1);
+			}
+			else
+			{
+				ip = line;
+			}
+
+			if (ip.empty())
+			{
+				continue;
+			}
+
+			// Double line breaks from windows' \r\n
+			if (ip[ip.size() - 1] == '\r')
+			{
+				ip.pop_back();
+			}
+
+			entries.emplace(ip, kill_list_entry(ip, comment));
+		}
+
+		console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
+	});
 }
 
 void kill_list::write_to_disk()
@@ -141,7 +143,7 @@ void kill_list::write_to_disk()
 		for (const auto& kv : entries)
 		{
 			auto& entry = kv.second;
-			stream << entry.ip_address << " " << entry.reason << "\n";
+			stream << entry.ip_address_ << " " << entry.reason_ << "\n";
 		}
 
 		utils::io::write_file(kill_file, stream.str());
