@@ -56,7 +56,7 @@ void kill_list::remove_from_kill_list(const network::address& remove)
 
 void kill_list::remove_from_kill_list(const std::string& remove)
 {
-	bool any_change = entries_container.access<bool>([&remove, &any_change](kill_list_entries& entries)
+	bool any_change = entries_container.access<bool>([&remove](kill_list_entries& entries)
 	{
 		if (entries.erase(remove))
 		{
