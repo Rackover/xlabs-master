@@ -79,7 +79,11 @@ void kill_list::remove_from_kill_list(const std::string& remove)
 
 void kill_list::reload_from_disk()
 {
-	if (utils::io::file_exists(kill_file))
+	if (!utils::io::file_exists(kill_file))
+	{
+		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
+	}
+	else
 	{
 		std::string contents = utils::io::read_file(kill_file);
 
@@ -127,10 +131,6 @@ void kill_list::reload_from_disk()
 
 			console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
 		});
-	}
-	else
-	{
-		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
 	}
 }
 
