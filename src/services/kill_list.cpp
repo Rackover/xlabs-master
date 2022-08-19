@@ -1,6 +1,7 @@
 #include "std_include.hpp"
 #include "kill_list.hpp"
-#include "utils/io.hpp"
+
+#include <utils/io.hpp>
 
 kill_list::kill_list_entry::kill_list_entry(std::string ip_address, std::string reason)
 	: ip_address_(std::move(ip_address)), reason_(std::move(reason))

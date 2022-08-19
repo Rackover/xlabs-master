@@ -4,9 +4,9 @@
 #include "crypto_key.hpp"
 #include "services/kill_list.hpp"
 
-#include "utils/parameters.hpp"
-#include "utils/io.hpp"
-#include "utils/string.hpp"
+#include <utils/parameters.hpp>
+#include <utils/io.hpp>
+#include <utils/string.hpp>
 
 const char* patch_kill_list_command::get_command() const
 {
@@ -26,11 +26,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 	const auto current_timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
 
 	// Abs the duration so that the client can be ahead or behind
-	auto time_stretch = current_timestamp - supplied_timestamp;
-	if (time_stretch < time_stretch.zero())
-	{
-		time_stretch = -time_stretch;
-	}
+	const auto time_stretch = std::chrono::abs(current_timestamp - supplied_timestamp);
 
 	// not offset by more than 5 minutes in either direction
 	if (time_stretch > 5min)
@@ -39,23 +35,14 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 	}
 
 	const auto& signature = utils::cryptography::base64::decode(params[1]);
-	bool should_remove = params[2] == "remove"s;
+	const auto should_remove = params[2] == "remove"s;
 
 	if (!should_remove && params[2] != "add"s)
 	{
 		throw execution_exception("Invalid parameter #2: should be 'add' or 'remove'");
 	}
 
-	std::string supplied_reason;
-
-	if (params.size() > 5)
-	{
-		for (size_t i = 4; i < params.size(); ++i)
-		{
-			supplied_reason += params[i] + " ";
-		}
-	}
-
+	const auto supplied_reason = params.join(4);
 	const auto& crypto_key = crypto_key::get(); 
 	const std::string signature_candidate = std::to_string(supplied_timestamp.count());
 
