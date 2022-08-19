@@ -4,15 +4,16 @@
 #include "crypto_key.hpp"
 #include "services/kill_list.hpp"
 
-#include <utils/parameters.hpp>
-#include <utils/io.hpp>
+#include "utils/parameters.hpp"
+#include "utils/io.hpp"
+#include "utils/string.hpp"
 
 const char* patch_kill_list_command::get_command() const
 {
 	return "patchkill";
 }
 
-// patchkill signature add/remove target_ip (ban_reason)
+// patchkill timestamp signature add/remove target_ip (ban_reason)
 void patch_kill_list_command::handle_command([[maybe_unused]] const network::address& target, const std::string_view& data)
 {
 	const utils::parameters params(data);
@@ -20,35 +21,51 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 	{
 		throw execution_exception("Invalid parameter count");
 	}
-	
-	const auto& signature = utils::cryptography::base64::decode(params[0]);
-	bool should_remove = params[1] == "remove"s;
 
-	if (!should_remove && params[1] != "add"s)
+	const auto supplied_timestamp = std::chrono::seconds(std::stoul(params[0]));
+	const auto current_timestamp = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch());
+
+	// Abs the duration so that the client can be ahead or behind
+	auto time_stretch = current_timestamp - supplied_timestamp;
+	if (time_stretch < time_stretch.zero())
+	{
+		time_stretch = -time_stretch;
+	}
+
+	// not offset by more than 5 minutes in either direction
+	if (time_stretch > 5min)
+	{
+		throw execution_exception(utils::string::va("Invalid timestamp supplied - expected %llu, got %llu, which is more than 5 minutes apart", current_timestamp.count(), supplied_timestamp.count()));
+	}
+
+	const auto& signature = utils::cryptography::base64::decode(params[1]);
+	bool should_remove = params[2] == "remove"s;
+
+	if (!should_remove && params[2] != "add"s)
 	{
 		throw execution_exception("Invalid parameter #2: should be 'add' or 'remove'");
 	}
 
-	const auto& supplied_address = params[2];
-
 	std::string supplied_reason;
 
-	if (params.size() > 4)
+	if (params.size() > 5)
 	{
-		for (size_t i = 3; i < params.size(); ++i)
+		for (size_t i = 4; i < params.size(); ++i)
 		{
 			supplied_reason += params[i] + " ";
 		}
 	}
 
 	const auto& crypto_key = crypto_key::get(); 
+	const std::string signature_candidate = std::to_string(supplied_timestamp.count());
 
-	if (!utils::cryptography::ecc::verify_message(crypto_key, supplied_address, signature))
+	if (!utils::cryptography::ecc::verify_message(crypto_key, signature_candidate, signature))
 	{
 		throw execution_exception("Signature verification of the kill list patch key failed");
 	}
 
 	const auto kill_list_service = this->get_server().get_service<kill_list>();
+	const auto& supplied_address = params[3];
 
 	if (should_remove)
 	{
