@@ -3,6 +3,8 @@
 
 #include <utils/io.hpp>
 
+constexpr auto* kill_file = "./kill.txt";
+
 kill_list::kill_list_entry::kill_list_entry(std::string ip_address, std::string reason)
 	: ip_address_(std::move(ip_address)), reason_(std::move(reason))
 {
@@ -29,7 +31,7 @@ void kill_list::add_to_kill_list(kill_list_entry add)
 {
 	const auto any_change = entries_container.access<bool>([&add](kill_list_entries& entries)
 	{
-		auto existing_entry = entries.find(add.ip_address_);
+		const auto existing_entry = entries.find(add.ip_address_);
 		if (existing_entry == entries.end() || existing_entry->second.reason_ != add.reason_)
 		{
 			console::info("Added %s to kill list (reason: %s)", add.ip_address_.data(), add.reason_.data());
@@ -57,7 +59,7 @@ void kill_list::remove_from_kill_list(const network::address& remove)
 
 void kill_list::remove_from_kill_list(const std::string& remove)
 {
-	bool any_change = entries_container.access<bool>([&remove](kill_list_entries& entries)
+	const auto any_change = entries_container.access<bool>([&remove](kill_list_entries& entries)
 	{
 		if (entries.erase(remove))
 		{
@@ -82,7 +84,7 @@ void kill_list::reload_from_disk()
 	std::string contents;
 	if (!utils::io::read_file(kill_file, &contents))
 	{
-		console::info("Could not find %s, no kill list will be loaded.", kill_file.data());
+		console::info("Could not find %s, no kill list will be loaded.", kill_file);
 		return;
 	}
 
@@ -103,7 +105,7 @@ void kill_list::reload_from_disk()
 			std::string ip;
 			std::string comment;
 
-			auto index = line.find(' ');
+			const auto index = line.find(' ');
 			if (line.find(' ') != std::string::npos)
 			{
 				ip = line.substr(0, index);
@@ -128,7 +130,7 @@ void kill_list::reload_from_disk()
 			entries.emplace(ip, kill_list_entry(ip, comment));
 		}
 
-		console::info("Loaded %i kill list entries from %s", entries.size(), kill_file.data());
+		console::info("Loaded %i kill list entries from %s", entries.size(), kill_file);
 	});
 }
 
@@ -146,7 +148,7 @@ void kill_list::write_to_disk()
 		}
 
 		utils::io::write_file(kill_file, stream.str());
-		console::info("Wrote %s to disk (%u entries)", kill_file.data(), entries.size());
+		console::info("Wrote %s to disk (%u entries)", kill_file, entries.size());
 	});
 }
 

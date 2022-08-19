@@ -18,8 +18,6 @@ public:
 		std::string reason_;
 	};
 
-	const std::string kill_file = "./kill.txt";
-
 	kill_list(server& server);
 
 	bool contains(const network::address& address, std::string& reason);
@@ -28,7 +26,6 @@ public:
 	void remove_from_kill_list(const std::string& remove);
 
 private:
-	std::string secret_;
 	using kill_list_entries = std::unordered_map<std::string, kill_list_entry>;
 	utils::concurrency::container<kill_list_entries> entries_container;
 
