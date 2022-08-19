@@ -5,9 +5,6 @@
 class kill_list : public service
 {
 public:
-
-	using service::service;
-
 	class kill_list_entry
 	{
 	public:
@@ -27,7 +24,7 @@ public:
 
 private:
 	using kill_list_entries = std::unordered_map<std::string, kill_list_entry>;
-	utils::concurrency::container<kill_list_entries> entries_container;
+	utils::concurrency::container<kill_list_entries> entries_container_;
 
 	void reload_from_disk();
 	void write_to_disk();

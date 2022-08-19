@@ -14,7 +14,7 @@ bool kill_list::contains(const network::address& address, std::string& reason)
 {
 	std::string str_address = address.to_string(false);
 
-	return entries_container.access<bool>([&str_address, &reason](const kill_list_entries& entries)
+	return this->entries_container_.access<bool>([&str_address, &reason](const kill_list_entries& entries)
 		{
 			if (entries.find(str_address) != entries.end())
 			{
@@ -29,7 +29,7 @@ bool kill_list::contains(const network::address& address, std::string& reason)
 
 void kill_list::add_to_kill_list(kill_list_entry add)
 {
-	const auto any_change = entries_container.access<bool>([&add](kill_list_entries& entries)
+	const auto any_change = this->entries_container_.access<bool>([&add](kill_list_entries& entries)
 	{
 		const auto existing_entry = entries.find(add.ip_address_);
 		if (existing_entry == entries.end() || existing_entry->second.reason_ != add.reason_)
@@ -42,24 +42,23 @@ void kill_list::add_to_kill_list(kill_list_entry add)
 		return false;
 	});
 
-	if (any_change)
+	if (!any_change)
 	{
-		write_to_disk();
+		console::info("%s already in kill list, doing nothing", add.ip_address_.data());
+		return;
 	}
-	else
-	{
-		console::info("%s already in kill list, not doing anything", add.ip_address_.data());
-	}
+
+	this->write_to_disk();
 }
 
 void kill_list::remove_from_kill_list(const network::address& remove)
 {
-	remove_from_kill_list(remove.to_string());
+	this->remove_from_kill_list(remove.to_string());
 }
 
 void kill_list::remove_from_kill_list(const std::string& remove)
 {
-	const auto any_change = entries_container.access<bool>([&remove](kill_list_entries& entries)
+	const auto any_change = this->entries_container_.access<bool>([&remove](kill_list_entries& entries)
 	{
 		if (entries.erase(remove))
 		{
@@ -76,7 +75,7 @@ void kill_list::remove_from_kill_list(const std::string& remove)
 		return;
 	}
 
-	write_to_disk();
+	this->write_to_disk();
 }
 
 void kill_list::reload_from_disk()
@@ -91,7 +90,7 @@ void kill_list::reload_from_disk()
 	std::istringstream string_stream(contents);
 	std::string line;
 
-	entries_container.access([&string_stream, &line](kill_list_entries& entries)
+	this->entries_container_.access([&string_stream, &line](kill_list_entries& entries)
 	{
 		entries.clear();
 		while (std::getline(string_stream, line))
@@ -139,7 +138,7 @@ void kill_list::write_to_disk()
 	utils::io::remove_file(kill_file);
 
 	std::ostringstream stream;
-	entries_container.access([&stream](const kill_list_entries& entries)
+	this->entries_container_.access([&stream](const kill_list_entries& entries)
 	{
 		for (const auto& kv : entries)
 		{
@@ -154,5 +153,5 @@ void kill_list::write_to_disk()
 
 kill_list::kill_list(server& server) : service(server)
 {
-	reload_from_disk();
+	this->reload_from_disk();
 }
