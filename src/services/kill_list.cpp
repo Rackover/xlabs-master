@@ -91,7 +91,7 @@ void kill_list::reload_from_disk()
 	std::istringstream string_stream(contents);
 	std::string line;
 
-	entries_container.access([&string_stream, &line, this](kill_list_entries& entries)
+	entries_container.access([&string_stream, &line](kill_list_entries& entries)
 	{
 		entries.clear();
 		while (std::getline(string_stream, line))
@@ -139,7 +139,7 @@ void kill_list::write_to_disk()
 	utils::io::remove_file(kill_file);
 
 	std::ostringstream stream;
-	entries_container.access([&stream, this](kill_list_entries& entries)
+	entries_container.access([&stream](const kill_list_entries& entries)
 	{
 		for (const auto& kv : entries)
 		{
