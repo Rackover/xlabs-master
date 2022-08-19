@@ -44,7 +44,7 @@ void patch_kill_list_command::handle_command([[maybe_unused]] const network::add
 
 	const auto supplied_reason = params.join(4);
 	const auto& crypto_key = crypto_key::get(); 
-	const std::string signature_candidate = std::to_string(supplied_timestamp.count());
+	const auto signature_candidate = std::to_string(supplied_timestamp.count());
 
 	if (!utils::cryptography::ecc::verify_message(crypto_key, signature_candidate, signature))
 	{
