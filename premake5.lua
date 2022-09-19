@@ -65,7 +65,12 @@ filter "toolset:msc*"
 	}
 filter {}
 
-systemversion "latest"
+filter { "system:windows" }
+	systemversion "latest"
+filter { "system:macosx" }
+	systemversion "11.0"
+filter {}
+
 symbols "On"
 staticruntime "On"
 editandcontinue "Off"
@@ -73,8 +78,8 @@ warnings "Extra"
 characterset "ASCII"
 
 if os.istarget("linux") or os.istarget("darwin") then
-	buildoptions { "-pthread" }
-	linkoptions { "-pthread" }
+	buildoptions {"-pthread"}
+	linkoptions {"-pthread"}
 end
 
 if _OPTIONS["dev-build"] then
