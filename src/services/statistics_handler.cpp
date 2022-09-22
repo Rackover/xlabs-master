@@ -14,8 +14,8 @@ namespace
 
 		for (const auto& game_servers : servers)
 		{
-			const auto server_count = game_servers.second.size();
-			const auto player_count = players[game_servers.first];
+			const auto server_count = static_cast<uint32_t>(game_servers.second.size());
+			const auto player_count = static_cast<uint32_t>(players[game_servers.first]);
 
 			rapidjson::Value game{};
 			game.SetObject();
