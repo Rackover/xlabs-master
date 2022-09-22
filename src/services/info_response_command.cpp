@@ -35,11 +35,16 @@ void info_response_command::handle_command(const network::address& target, const
 				throw execution_exception{"Invalid challenge"};
 			}
 
+			const auto player_count = atoi(info.get("clients").data());
+			const auto bot_count = atoi(info.get("bots").data());
+			auto real_player_count = player_count - bot_count;
+			real_player_count = std::clamp(real_player_count, 0, 18);
+
 			server.registered = true;
 			server.game = game_type;
 			server.state = game_server::state::can_ping;
 			server.protocol = atoi(info.get("protocol").data());
-			server.clients = atoi(info.get("clients").data());
+			server.clients = static_cast<uint32_t>(real_player_count);
 			server.name = info.get("hostname");
 			server.heartbeat = std::chrono::high_resolution_clock::now();
 			server.info_string = std::move(info);
