@@ -58,6 +58,7 @@ struct game_server
 
 	game_type game{game_type::unknown};
 	int protocol{};
+	uint32_t clients{};
 	std::string name{};
 	std::string challenge{};
 	utils::info_string info_string{};
