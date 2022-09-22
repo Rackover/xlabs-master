@@ -27,14 +27,6 @@ jobs:
           - arch: x64
             platform: x64
     steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check out files
         uses: actions/checkout@v3
         with:
@@ -81,14 +73,6 @@ jobs:
           - configuration: Release
             config: release
     steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check out files
         uses: actions/checkout@v3
         with:
@@ -150,14 +134,6 @@ jobs:
           - arch: ARM
             platform: arm
     steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check out files
         uses: actions/checkout@v3
         with:
@@ -190,6 +166,14 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master')
     steps:
+      - name: Wait for previous workflows
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: softprops/turnstyle@v1
+        with:
+          poll-interval-seconds: 10
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
       - name: Download master server binary
         uses: actions/download-artifact@v2
         with:
