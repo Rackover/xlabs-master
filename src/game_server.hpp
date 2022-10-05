@@ -8,6 +8,7 @@ enum class game_type
 	iw4,
 	iw6,
 	s1,
+	t7,
 };
 
 inline const std::string& resolve_game_type_name(const game_type game)
@@ -18,6 +19,7 @@ inline const std::string& resolve_game_type_name(const game_type game)
 		{game_type::iw4, "IW4"},
 		{game_type::iw6, "IW6"},
 		{game_type::s1, "S1"},
+		{game_type::t7, "T7"},
 	};
 
 	return names.at(game);
@@ -38,6 +40,11 @@ inline game_type resolve_game_type(const std::string& game_name)
 	if (game_name == "S1")
 	{
 		return game_type::s1;
+	}
+
+	if (game_name == "T7")
+	{
+		return game_type::t7;
 	}
 
 	return game_type::unknown;
