@@ -1,5 +1,6 @@
 #pragma once
-#include "network/address.hpp"
+#include <network/address.hpp>
+
 #include "../service.hpp"
 
 class kill_list : public service
