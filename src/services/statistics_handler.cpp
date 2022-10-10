@@ -1,8 +1,9 @@
 #include <std_include.hpp>
 #include "statistics_handler.hpp"
 #include "../console.hpp"
-#include "../utils/io.hpp"
-#include "../utils/string.hpp"
+
+#include <utils/io.hpp>
+#include <utils/string.hpp>
 
 namespace
 {

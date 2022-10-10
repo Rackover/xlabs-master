@@ -2,7 +2,8 @@
 #include "getservers_command.hpp"
 
 #include "../console.hpp"
-#include "../utils/parameters.hpp"
+
+#include <utils/parameters.hpp>
 
 const char* getservers_command::get_command() const
 {
