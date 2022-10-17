@@ -11,18 +11,22 @@ const char* getbots_command::get_command() const
 
 void getbots_command::handle_command(const network::address& target, const std::string_view&)
 {
-	static const std::vector<std::string> bot_names{
+	static const std::vector<std::string> bot_names
+	{
 		"Snake",
 		"quak",
 		"Dsso",
 		"Jimbo",
 		"RektInator",
 		"FragsAreUs",
+		"Diamante",
 		"Evan",
 		"H3X1C",
 		"FryTechTip",
 		"homura",
 		"Jebus3211",
+		"Laupetin",
+		"Louvenarde",
 		"Infamous",
 		"RezTech",
 		"OneFourOne",
