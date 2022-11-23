@@ -39,7 +39,7 @@ targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
 configurations {"Debug", "Release"}
 
 if os.istarget("darwin") then
-	platforms {"x64", "arm"}
+	platforms {"x64", "arm64"}
 else
 	platforms {"x86", "x64"}
 end
@@ -50,10 +50,8 @@ architecture "x32"
 filter "platforms:x64"
 architecture "x86_64"
 
-filter "platforms:arm"
-architecture "ARM"
-buildoptions {"-arch arm64"}
-linkoptions {"-arch arm64"}
+filter "platforms:arm64"
+architecture "ARM64"
 
 filter { "language:C++", "toolset:not msc*" }
 	buildoptions {
@@ -68,7 +66,7 @@ filter {}
 filter { "system:windows" }
 	systemversion "latest"
 filter { "system:macosx" }
-	systemversion "11.0"
+	systemversion "12.0"
 filter {}
 
 symbols "On"
