@@ -8,6 +8,11 @@ on:
     branches:
       - "*"
     types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-win:
     name: Build Windows
@@ -165,15 +170,7 @@ jobs:
     needs: [build-win, build-lin, build-mac]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master')
-    steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+    steps:    
       - name: Download master server binary
         uses: actions/download-artifact@v3
         with:
