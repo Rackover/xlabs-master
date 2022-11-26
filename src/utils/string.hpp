@@ -90,6 +90,7 @@ namespace utils::string
 
 	std::string to_lower(std::string text);
 	std::string to_upper(std::string text);
+
 	bool starts_with(const std::string& text, const std::string& substring);
 	bool ends_with(const std::string& text, const std::string& substring);
 

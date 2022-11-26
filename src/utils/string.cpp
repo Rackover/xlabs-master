@@ -37,7 +37,7 @@ namespace utils::string
 
 	std::string to_lower(std::string text)
 	{
-		std::transform(text.begin(), text.end(), text.begin(), [](const char input)
+		std::transform(text.begin(), text.end(), text.begin(), [](const unsigned char input)
 		{
 			return static_cast<char>(tolower(input));
 		});
@@ -47,7 +47,7 @@ namespace utils::string
 
 	std::string to_upper(std::string text)
 	{
-		std::transform(text.begin(), text.end(), text.begin(), [](const char input)
+		std::transform(text.begin(), text.end(), text.begin(), [](const unsigned char input)
 		{
 			return static_cast<char>(toupper(input));
 		});
