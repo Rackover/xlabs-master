@@ -53,7 +53,7 @@ architecture "x86_64"
 filter "platforms:arm64"
 architecture "ARM64"
 
-filter { "language:C++", "toolset:not msc*" }
+filter {"language:C++", "toolset:not msc*"}
 	buildoptions {
 		"-std=c++17"
 	}
@@ -63,9 +63,9 @@ filter "toolset:msc*"
 	}
 filter {}
 
-filter { "system:windows" }
+filter {"system:windows"}
 	systemversion "latest"
-filter { "system:macosx" }
+filter {"system:macosx"}
 	systemversion "12.0"
 filter {}
 
