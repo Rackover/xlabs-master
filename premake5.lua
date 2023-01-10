@@ -76,8 +76,8 @@ warnings "Extra"
 characterset "ASCII"
 
 if os.istarget("linux") or os.istarget("darwin") then
-	buildoptions {"-pthread"}
-	linkoptions {"-pthread"}
+	buildoptions "-pthread"
+	linkoptions "-pthread"
 end
 
 if _OPTIONS["dev-build"] then
@@ -85,7 +85,7 @@ if _OPTIONS["dev-build"] then
 end
 
 if os.getenv("CI") then
-	defines {"CI"}
+	defines "CI"
 end
 
 flags {"NoIncrementalLink", "NoMinimalRebuild", "MultiProcessorCompile", "No64BitChecks"}
