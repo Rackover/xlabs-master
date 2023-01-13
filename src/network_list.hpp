@@ -3,7 +3,6 @@
 #include <functional>
 
 #include "console.hpp"
-#include "game_server.hpp"
 #include "network/address.hpp"
 #include "utils/concurrency.hpp"
 

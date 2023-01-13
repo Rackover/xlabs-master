@@ -15,11 +15,18 @@ void getservers_command::handle_command(const network::address& target, const st
 	const utils::parameters params(data);
 	if (params.size() < 2)
 	{
-		throw execution_exception{"Invalid parameter count"};
+		throw execution_exception("Invalid parameter count");
 	}
 
 	const auto& game = params[0];
-	const auto protocol = atoi(params[1].data());
+
+	const auto* p = params[1].data();
+	char* end;
+	const auto protocol = strtol(params[1].data(), &end, 10);
+	if (p == end)
+	{
+		throw execution_exception("Invalid protocol");
+	}
 
 	const auto game_type = resolve_game_type(game);
 	if (game_type == game_type::unknown)
@@ -46,9 +53,9 @@ void getservers_command::handle_command(const network::address& target, const st
 
 	response.push_back('\\');
 	response.append("EOT");
-	response.push_back(0);
-	response.push_back(0);
-	response.push_back(0);
+	response.push_back('\0');
+	response.push_back('\0');
+	response.push_back('\0');
 
 	this->get_server().send(target, "getserversResponse", response);
 
