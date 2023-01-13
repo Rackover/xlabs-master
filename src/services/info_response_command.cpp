@@ -55,6 +55,6 @@ void info_response_command::handle_command(const network::address& target, const
 
 	if (!found)
 	{
-		throw execution_exception{"Inforesponse without server!"};
+		throw execution_exception{"infoResponse without server!"};
 	}
 }

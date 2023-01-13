@@ -129,7 +129,7 @@ void kill_list::reload_from_disk()
 			entries.emplace(ip, kill_list_entry(ip, comment));
 		}
 
-		console::info("Loaded %i kill list entries from %s", entries.size(), kill_file);
+		console::info("Loaded %zu kill list entries from %s", entries.size(), kill_file);
 	});
 }
 
@@ -147,7 +147,7 @@ void kill_list::write_to_disk()
 		}
 
 		utils::io::write_file(kill_file, stream.str());
-		console::info("Wrote %s to disk (%u entries)", kill_file, entries.size());
+		console::info("Wrote %s to disk (%zu entries)", kill_file, entries.size());
 	});
 }
 

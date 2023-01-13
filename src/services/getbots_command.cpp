@@ -14,7 +14,6 @@ void getbots_command::handle_command(const network::address& target, const std::
 	static const std::vector<std::string> bot_names
 	{
 		"Snake",
-		"quak",
 		"Dsso",
 		"Jimbo",
 		"RektInator",
@@ -25,6 +24,7 @@ void getbots_command::handle_command(const network::address& target, const std::
 		"FryTechTip",
 		"homura",
 		"Jebus3211",
+		"Joel",
 		"Laupetin",
 		"Louvenarde",
 		"Infamous",
