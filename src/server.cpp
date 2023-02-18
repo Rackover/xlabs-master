@@ -7,10 +7,12 @@
 #include "services/getservers_command.hpp"
 #include "services/heartbeat_command.hpp"
 #include "services/info_response_command.hpp"
+#include "services/patch_kill_list_command.hpp"
 #include "services/ping_handler.hpp"
 #include "services/elimination_handler.hpp"
 #include "services/statistics_handler.hpp"
 #include "services/patreon_handler.hpp"
+#include "services/kill_list.hpp"
 
 server::server(const network::address& bind_addr)
 	: server_base(bind_addr)
@@ -19,10 +21,12 @@ server::server(const network::address& bind_addr)
 	this->register_service<getservers_command>();
 	this->register_service<heartbeat_command>();
 	this->register_service<info_response_command>();
+	this->register_service<patch_kill_list_command>();
 	this->register_service<ping_handler>();
 	this->register_service<elimination_handler>();
 	this->register_service<statistics_handler>();
 	this->register_service<patreon_handler>();
+	this->register_service<kill_list>();
 }
 
 server_list& server::get_server_list()
@@ -71,6 +75,13 @@ void server::handle_command(const network::address& target, const std::string_vi
 	if (handler == this->command_services_.end())
 	{
 		console::warn("Unhandled command (%s): %.*s", target.to_string().data(), command.size(), command.data());
+		return;
+	}
+
+	std::string ban_reason;
+	if (this->get_service<kill_list>()->contains(target, ban_reason))
+	{
+		console::log("Refused command from server %s - target is on the kill list (%s)", target.to_string().data(), ban_reason.data());
 		return;
 	}
 

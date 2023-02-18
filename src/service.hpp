@@ -25,7 +25,7 @@ public:
 	service& operator=(service&&) = delete;
 	service& operator=(const service&) = delete;
 
-	virtual const char* get_command() const { return nullptr; }
+	[[nodiscard]] virtual const char* get_command() const { return nullptr; }
 
 	virtual void handle_command([[maybe_unused]] const network::address& target,
 	                            [[maybe_unused]] const std::string_view& data)
@@ -37,7 +37,7 @@ public:
 	}
 
 protected:
-	const server& get_server() const
+	[[nodiscard]] const server& get_server() const
 	{
 		return server_;
 	}

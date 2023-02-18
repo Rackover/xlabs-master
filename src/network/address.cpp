@@ -44,12 +44,18 @@ namespace network
 		return ntohs(this->address_.sin_port);
 	}
 
-	std::string address::to_string() const
+	std::string address::to_string(bool with_port) const
 	{
 		char buffer[1000] = {0};
 		inet_ntop(this->address_.sin_family, &this->address_.sin_addr, buffer, sizeof(buffer));
 
-		return std::string(buffer) + ":"s + std::to_string(this->get_port());
+		auto address = std::string(buffer);
+		if (with_port)
+		{
+			address += ":"s + std::to_string(this->get_port());
+		}
+
+		return address;
 	}
 
 	bool address::is_local() const

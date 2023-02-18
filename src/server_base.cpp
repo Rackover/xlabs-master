@@ -38,13 +38,11 @@ server_base::server_base(const network::address& bind_addr)
 void server_base::run()
 {
 	this->stopped_ = false;
-	std::thread thread{
-		[&]()
-		{
-			std::this_thread::sleep_for(30ms);
-			this->run_socket();
-		}
-	};
+	std::thread thread = std::thread([this]
+	{
+		std::this_thread::sleep_for(30ms);
+		this->run_socket();
+	});
 
 	while (!this->stopped_)
 	{

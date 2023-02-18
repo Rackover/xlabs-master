@@ -16,11 +16,20 @@ namespace
 			auto result = p.execute(url);
 			if (!result)
 			{
-				throw std::runtime_error{"Unable to get data"};
+				throw std::runtime_error("Unable to get data");
 			}
 
-			rapidjson::Document document{};
-			document.Parse(result->data(), result->size());
+			rapidjson::Document document;
+			const rapidjson::ParseResult parse_result = document.Parse(result->data(), result->size());
+			if (parse_result.IsError() || !document.IsObject())
+			{
+				throw std::runtime_error("Unable to parse the JSON response from Patreon");
+			}
+
+			if (!document.HasMember("included") || !document.HasMember("data"))
+			{
+				throw std::runtime_error("Unexpected JSON response from Patreon");
+			}
 
 			std::unordered_set<std::string> hidden_users{};
 			const auto& included = document["included"];

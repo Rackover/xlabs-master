@@ -39,7 +39,7 @@ targetdir "%{wks.location}/bin/%{cfg.platform}/%{cfg.buildcfg}"
 configurations {"Debug", "Release"}
 
 if os.istarget("darwin") then
-	platforms {"x64", "arm"}
+	platforms {"x64", "arm64"}
 else
 	platforms {"x86", "x64"}
 end
@@ -50,12 +50,10 @@ architecture "x32"
 filter "platforms:x64"
 architecture "x86_64"
 
-filter "platforms:arm"
-architecture "ARM"
-buildoptions {"-arch arm64"}
-linkoptions {"-arch arm64"}
+filter "platforms:arm64"
+architecture "ARM64"
 
-filter { "language:C++", "toolset:not msc*" }
+filter {"language:C++", "toolset:not msc*"}
 	buildoptions {
 		"-std=c++17"
 	}
@@ -65,7 +63,12 @@ filter "toolset:msc*"
 	}
 filter {}
 
-systemversion "latest"
+filter {"system:windows"}
+	systemversion "latest"
+filter {"system:macosx"}
+	systemversion "12.0"
+filter {}
+
 symbols "On"
 staticruntime "On"
 editandcontinue "Off"
@@ -73,8 +76,8 @@ warnings "Extra"
 characterset "ASCII"
 
 if os.istarget("linux") or os.istarget("darwin") then
-	buildoptions { "-pthread" }
-	linkoptions { "-pthread" }
+	buildoptions "-pthread"
+	linkoptions "-pthread"
 end
 
 if _OPTIONS["dev-build"] then
@@ -82,7 +85,7 @@ if _OPTIONS["dev-build"] then
 end
 
 if os.getenv("CI") then
-	defines {"CI"}
+	defines "CI"
 end
 
 flags {"NoIncrementalLink", "NoMinimalRebuild", "MultiProcessorCompile", "No64BitChecks"}

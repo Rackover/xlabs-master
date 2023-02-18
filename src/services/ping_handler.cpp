@@ -1,7 +1,7 @@
 #include <std_include.hpp>
 #include "ping_handler.hpp"
 
-#include "../utils/cryptography.hpp"
+#include <utils/cryptography.hpp>
 
 void ping_handler::run_frame()
 {
