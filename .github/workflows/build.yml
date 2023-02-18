@@ -8,6 +8,11 @@ on:
     branches:
       - "*"
     types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-win:
     name: Build Windows
@@ -27,16 +32,8 @@ jobs:
           - arch: x64
             platform: x64
     steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check out files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           submodules: true
           fetch-depth: 0
@@ -44,7 +41,7 @@ jobs:
           lfs: false
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v1.3.1
 
       - name: Generate project files
         run: cmd /C call generate.bat
@@ -56,7 +53,7 @@ jobs:
         run: msbuild /m /v:minimal /p:Configuration=${{matrix.configuration}} /p:Platform=${{matrix.platform}} build/xlabs-master.sln
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Windows ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
@@ -65,7 +62,7 @@ jobs:
 
   build-lin:
     name: Build Linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -81,16 +78,8 @@ jobs:
           - configuration: Release
             config: release
     steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check out files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           submodules: true
           fetch-depth: 0
@@ -122,7 +111,7 @@ jobs:
           ../tools/mold -run make config=${{matrix.config}}_${{matrix.arch}} -j$(nproc)
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: Linux ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
@@ -130,7 +119,7 @@ jobs:
 
   build-mac:
     name: Build macOS
-    runs-on: macos-latest
+    runs-on: macos-12
     strategy:
       fail-fast: false
       matrix:
@@ -139,7 +128,7 @@ jobs:
           - Release
         arch:
           - x64
-          #- ARM
+          - ARM64
         include:
           - configuration: Debug
             config: debug
@@ -147,19 +136,11 @@ jobs:
             config: release
           - arch: x64
             platform: x64
-          #- arch: ARM
-          #  platform: arm
+          - arch: ARM64
+            platform: arm64
     steps:
-      - name: Wait for previous workflows
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Check out files
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           submodules: true
           fetch-depth: 0
@@ -178,7 +159,7 @@ jobs:
           make config=${{matrix.config}}_${{matrix.platform}} -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload ${{matrix.configuration}} ${{matrix.arch}} binaries
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: macOS ${{matrix.configuration}} ${{matrix.arch}} binaries
           path: |
@@ -189,27 +170,20 @@ jobs:
     needs: [build-win, build-lin, build-mac]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master')
-    steps:
+    steps:    
       - name: Download master server binary
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3.0.2
         with:
           name: Linux Release x64 binaries
 
       - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@v2.5.0
         with:
           key: ${{ secrets.XLABS_MASTER_SSH_PRIVATE_KEY }}
           known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
 
       - name: Add known hosts
         run: ssh-keyscan -H ${{ secrets.XLABS_MASTER_SSH_ADDRESS }} >> ~/.ssh/known_hosts
-
-      - name: Wait for previous workflows
-        uses: softprops/turnstyle@v1
-        with:
-          poll-interval-seconds: 10
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload master server binary
         run: rsync -avz xlabs-master ${{ secrets.XLABS_MASTER_SSH_USER }}@${{ secrets.XLABS_MASTER_SSH_ADDRESS }}:${{ secrets.XLABS_MASTER_SSH_PATH_MASTER_SERVER }}/

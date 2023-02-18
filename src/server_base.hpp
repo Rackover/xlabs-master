@@ -25,6 +25,6 @@ private:
 	volatile bool stopped_ = false;
 
 	void run_socket();
-	bool receive_data();
+	[[nodiscard]] bool receive_data();
 	void parse_data(const network::address& target, const std::string_view& data);
 };
