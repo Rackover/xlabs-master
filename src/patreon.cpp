@@ -8,6 +8,7 @@ namespace
 {
 	void patrons_get(patreon::patron_list& patrons, patreon& p)
 	{
+		return;
 		std::string url =
 			"https://www.patreon.com/api/oauth2/v2/campaigns/3669088/members?include=currently_entitled_tiers,address,user&fields%5Bmember%5D=full_name,is_follower,last_charge_date,last_charge_status,lifetime_support_cents,currently_entitled_amount_cents,patron_status&fields%5Btier%5D=amount_cents,created_at,description,discord_role_ids,edited_at,patron_count,published,published_at,requires_shipping,title,url&fields%5Baddress%5D=addressee,city,line_1,line_2,phone_number,postal_code,state&fields%5Buser%5D=full_name,social_connections,hide_pledges&page%5Bcount%5D=100";
 

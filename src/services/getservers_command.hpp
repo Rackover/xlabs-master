@@ -9,4 +9,11 @@ public:
 
 	const char* get_command() const override;
 	void handle_command(const network::address& target, const std::string_view& data) override;
+
+private:
+	struct prepared_server
+	{
+		ULONG address;
+		u_short port;
+	};
 };
