@@ -33,26 +33,26 @@ void getservers_command::handle_command(const network::address& target, const st
 	const auto game_type = resolve_game_type(game);
 	if (game_type == game_type::unknown)
 	{
-		throw execution_exception{"Invalid game type: " + game};
+		throw execution_exception{ "Invalid game type: " + game };
 	}
 
 	std::queue<prepared_server> prepared_servers{};
 
 	this->get_server().get_server_list() //
-	    .find_registered_servers(game_type, protocol,
-	                             [&prepared_servers](const game_server&, const network::address& address)
-	                             {
-		                             const auto addr = address.get_in_addr().sin_addr.s_addr;
-		                             const auto port = htons(address.get_port());
+		.find_registered_servers(game_type, protocol,
+			[&prepared_servers](const game_server&, const network::address& address)
+			{
+				const auto addr = address.get_in_addr().sin_addr.s_addr;
+				const auto port = htons(address.get_port());
 
-									 prepared_servers.push({ addr, port });
-	                             });
+				prepared_servers.push({ addr, port });
+			});
 
 	int packet_count = 0;
 
 	std::string response{};
 
-	while(!prepared_servers.empty())
+	while (!prepared_servers.empty())
 	{
 		const auto& server = prepared_servers.front();
 		response.push_back('\\');
