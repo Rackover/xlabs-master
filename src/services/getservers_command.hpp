@@ -13,7 +13,7 @@ public:
 private:
 	struct prepared_server
 	{
-		ULONG address;
-		u_short port;
+		uint64_t address;
+		uint16_t port;
 	};
 };
