@@ -14,7 +14,7 @@ namespace
 	};
 }
 
-constexpr auto MTU = 900; // Real UDP MTU is more like 1050 bytes, but we keep a little wiggle room just in case
+constexpr auto MTU = 1400; // Real UDP MTU is more like 1500 bytes, but we keep a little wiggle room just in case
 constexpr auto DPM_PROTOCOL_ADDRESS_LENGTH = sizeof prepared_server::address;
 constexpr auto DPM_PROTOCOL_PORT_LENGTH = sizeof prepared_server::port;
 
