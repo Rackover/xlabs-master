@@ -5,8 +5,6 @@
 
 #include <utils/parameters.hpp>
 
-constexpr auto MTU = 900; // Real UDP MTU is more like 1050 bytes, but we keep a little wiggle room just in case
-
 namespace
 {
 	struct prepared_server
@@ -15,6 +13,14 @@ namespace
 		uint16_t port;
 	};
 }
+
+constexpr auto MTU = 900; // Real UDP MTU is more like 1050 bytes, but we keep a little wiggle room just in case
+constexpr auto DPM_PROTOCOL_ADDRESS_LENGTH = sizeof prepared_server::address;
+constexpr auto DPM_PROTOCOL_PORT_LENGTH = sizeof prepared_server::port;
+
+static_assert(DPM_PROTOCOL_ADDRESS_LENGTH == 4);
+static_assert(DPM_PROTOCOL_PORT_LENGTH == 2);
+
 
 const char* getservers_command::get_command() const
 {
@@ -65,8 +71,8 @@ void getservers_command::handle_command(const network::address& target, const st
 	{
 		const auto& server = prepared_servers.front();
 		response.push_back('\\');
-		response.append(reinterpret_cast<const char*>(&server.address), sizeof server.address);
-		response.append(reinterpret_cast<const char*>(&server.port), sizeof server.port);
+		response.append(reinterpret_cast<const char*>(&server.address), DPM_PROTOCOL_ADDRESS_LENGTH);
+		response.append(reinterpret_cast<const char*>(&server.port), DPM_PROTOCOL_PORT_LENGTH);
 		prepared_servers.pop();
 
 		if (response.size() >= MTU || prepared_servers.empty())
