@@ -7,6 +7,15 @@
 
 constexpr auto MTU = 900; // Real UDP MTU is more like 1050 bytes, but we keep a little wiggle room just in case
 
+namespace
+{
+	struct prepared_server
+	{
+		uint32_t address;
+		uint16_t port;
+	};
+}
+
 const char* getservers_command::get_command() const
 {
 	return "getservers";
@@ -75,5 +84,5 @@ void getservers_command::handle_command(const network::address& target, const st
 		}
 	}
 
-	console::log("Sent %d servers in %i parts for game %s:\t%s", prepared_servers.size(), packet_count, game.data(), target.to_string().data());
+	console::log("Sent %zu servers in %i parts for game %s:\t%s", prepared_servers.size(), packet_count, game.data(), target.to_string().data());
 }
