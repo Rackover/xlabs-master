@@ -65,8 +65,8 @@ void getservers_command::handle_command(const network::address& target, const st
 	{
 		const auto& server = prepared_servers.front();
 		response.push_back('\\');
-		response.append(reinterpret_cast<const char*>(&server.address), 4);
-		response.append(reinterpret_cast<const char*>(&server.port), 2);
+		response.append(reinterpret_cast<const char*>(&server.address), sizeof server.address);
+		response.append(reinterpret_cast<const char*>(&server.port), sizeof server.port);
 		prepared_servers.pop();
 
 		if (response.size() >= MTU || prepared_servers.empty())
