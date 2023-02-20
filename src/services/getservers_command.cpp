@@ -79,9 +79,9 @@ void getservers_command::handle_command(const network::address& target, const st
 		{
 			response.push_back('\\');
 			response.append("EOT");
-			response.push_back(0);
-			response.push_back(0);
-			response.push_back(0);
+			response.push_back('\0');
+			response.push_back('\0');
+			response.push_back('\0');
 
 			this->get_server().send(target, "getserversResponse", response);
 			packet_count++;
